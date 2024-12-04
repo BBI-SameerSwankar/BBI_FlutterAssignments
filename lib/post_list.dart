@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:search_app/models/post_model.dart';
+import 'package:search_app/utils/theme.dart';
 
 class PostList extends StatefulWidget {
   final List<Post>? posts;
-  PostList({this.posts});
+  final isDarkMode;
+  PostList({this.posts,this.isDarkMode});
 
   @override
   State<PostList> createState() => _PostListState();
 }
+  
 
 class _PostListState extends State<PostList> {
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -20,11 +25,12 @@ class _PostListState extends State<PostList> {
           return Container(
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
-              color: Colors.white,  
+              color: widget.isDarkMode ?  Colors.grey[300] : Colors.white,  
               borderRadius: BorderRadius.circular(15), 
               boxShadow: [
                 BoxShadow(
                   color: Colors.deepPurple.withOpacity(0.1), 
+           
                   offset: Offset(2, 2),
                   blurRadius: 6,
                   spreadRadius: 3,

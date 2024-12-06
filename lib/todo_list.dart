@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/Providers/todo_provider.dart';
+import 'package:todo_app/models/todo_model.dart';
+
+import 'package:todo_app/todo_edit_form.dart'; // Import the edit form
 
 class TodoList extends StatefulWidget {
   const TodoList({super.key});
@@ -12,13 +15,13 @@ class TodoList extends StatefulWidget {
 class _TodoListState extends State<TodoList> {
   @override
   Widget build(BuildContext context) {
-    final todosProvider = Provider.of<TodoProvider>(context, listen: true);
+    final todoProvider = Provider.of<TodoProvider>(context, listen: true);
 
- 
+    // Function to show delete confirmation dialog
     void _showAlertDialog(BuildContext context, int index) {
       showDialog(
         context: context,
-        barrierDismissible: false, 
+        barrierDismissible: false, // User must press a button to dismiss
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Delete ToDo'),
@@ -33,9 +36,8 @@ class _TodoListState extends State<TodoList> {
               TextButton(
                 child: Text('Yes'),
                 onPressed: () {
-                  
-                  todosProvider.deleteTodo(index); 
-                  Navigator.of(context).pop(); 
+                  todoProvider.deleteTodo(index); // Call the delete method
+                  Navigator.of(context).pop(); // Close the dialog
                 },
               ),
             ],
@@ -46,22 +48,22 @@ class _TodoListState extends State<TodoList> {
 
     return Consumer<TodoProvider>(
       builder: (context, todoProvider, child) {
-        if (todoProvider.data.isEmpty) {
-          return const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "There are no todos to be displayed",
-                textAlign: TextAlign.center,
-              ),
-            ],
+        // If the todo list is empty, show a message
+        if (todoProvider.todos.isEmpty) {
+          return const Center(
+            child: Text(
+              "There are no todos to be displayed",
+              textAlign: TextAlign.center,
+            ),
           );
         }
 
+        // Display the list of todos
         return ListView.builder(
-          itemCount: todoProvider.data.length,
+          itemCount: todoProvider.todos.length,
           itemBuilder: (BuildContext context, int index) {
+            Todo todo = todoProvider.todos[index]; // Get the Todo object at the current index
+
             return Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               padding: const EdgeInsets.all(10),
@@ -69,23 +71,39 @@ class _TodoListState extends State<TodoList> {
                 color: const Color.fromARGB(255, 218, 135, 233),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
-              child: Center(
-                child: ListTile(
-                  trailing: GestureDetector(
-                    onTap: () {
-                      // Handle delete action
-                      _showAlertDialog(context, index); // Pass index to dialog
-                    },
-                    child: const Icon(Icons.delete),
-                  ),
-                  title: Text(
-                    "${todoProvider.data[index][0]}", // ToDo title
-                    style: const TextStyle(fontSize: 22),
-                  ),
-                  subtitle: Text(
-                    "${todoProvider.data[index][1]}", // ToDo description
-                    style: const TextStyle(fontSize: 18),
-                  ),
+              child: ListTile(
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        // Show the delete confirmation dialog
+                        _showAlertDialog(context, index);
+                      },
+                      child: const Icon(Icons.delete),
+                    ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigate to the Todo Edit form with the current todo item
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TodoEditForm(todo: todo),
+                          ),
+                        );
+                      },
+                      child: const Icon(Icons.edit),
+                    ),
+                  ],
+                ),
+                title: Text(
+                  todo.title, // Use todo.title instead of todoProvider.data[index][0]
+                  style: const TextStyle(fontSize: 22),
+                ),
+                subtitle: Text(
+                  todo.description, // Use todo.description instead of todoProvider.data[index][1]
+                  style: const TextStyle(fontSize: 18),
                 ),
               ),
             );

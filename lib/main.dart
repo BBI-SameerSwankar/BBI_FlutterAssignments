@@ -30,7 +30,7 @@ class MainApp extends StatelessWidget {
           themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: BlocProvider<NewsBloc>(
-        create: (_) => NewsBloc(getAllNews: locator<GetAllNews>() )..add(FetchAllNewsEvent()) ,
+        create: (_) => NewsBloc(getAllNews: locator<GetAllNews>() )..add(FetchAllNewsEvent(page: 1,pageSize: 20)) ,
         child: NewsList(), 
       ),
     );

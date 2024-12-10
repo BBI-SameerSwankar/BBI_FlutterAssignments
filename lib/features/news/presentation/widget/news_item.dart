@@ -1,10 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/features/news/data/models/news.dart';
 
-class NewsItemWidget extends StatelessWidget {
+class NewsItemWidget extends StatefulWidget {
   final NewsArticle newsArticle;
 
   const NewsItemWidget({super.key, required this.newsArticle});
+
+  @override
+  _NewsItemWidgetState createState() => _NewsItemWidgetState();
+}
+
+class _NewsItemWidgetState extends State<NewsItemWidget> {
+  bool _isExpanded = false;
+  bool _showReadMore = false;
+  final GlobalKey _textKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if the text overflows and set the state to show "Read more"
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkTextOverflow();
+    });
+  }
+
+  void _checkTextOverflow() {
+    final RenderBox renderBox = _textKey.currentContext?.findRenderObject() as RenderBox;
+    if (renderBox != null) {
+      final size = renderBox.size;
+      final textHeight = size.height;
+      final textLineHeight = 18.0; // This is the approximate line height of the text
+      final maxLines = 4;
+      final maxHeight = textLineHeight * maxLines;
+
+      if (textHeight > maxHeight) {
+        setState(() {
+          _showReadMore = true; // Show the Read more button if the text is longer
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +51,11 @@ class NewsItemWidget extends StatelessWidget {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.all(12.0),
-        leading: newsArticle.urlToImage.isNotEmpty
+        leading: widget.newsArticle.urlToImage.isNotEmpty
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  newsArticle.urlToImage,
+                  widget.newsArticle.urlToImage,
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
@@ -39,7 +74,7 @@ class NewsItemWidget extends StatelessWidget {
               )
             : const Icon(Icons.image, size: 80, color: Colors.grey),
         title: Text(
-          newsArticle.title,
+          widget.newsArticle.title,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -48,16 +83,36 @@ class NewsItemWidget extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Flexible(
-          child: Text(
-            newsArticle.description ?? 'No description available.',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black54,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.newsArticle.description ?? 'No description available.',
+              key: _textKey,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+              ),
+              maxLines: _isExpanded ? null : 4,
+              overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
             ),
-          ),
+            if (_showReadMore)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _isExpanded = !_isExpanded;
+                  });
+                },
+                child: Text(
+                  _isExpanded ? 'Show less' : 'Read more',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+          ],
         ),
-        // Removed the trailing widget here (the right arrow icon)
         onTap: () {
           // You can add navigation or action on tap here
         },

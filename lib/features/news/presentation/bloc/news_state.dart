@@ -8,8 +8,11 @@ class NewsLoading extends NewsState {}
 
 class NewsLoaded extends NewsState {
   final List<NewsArticle> newsList;
+  final int page;
+  final int pageSize;
 
-  NewsLoaded(this.newsList);
+
+  NewsLoaded(this.newsList, this.page , this.pageSize);
 }
 
 class NewsError extends NewsState {

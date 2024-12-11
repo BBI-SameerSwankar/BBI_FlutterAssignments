@@ -5,5 +5,5 @@ class FetchAllNewsEvent extends NewsEvent {
   final int pageSize;
 
   
-  FetchAllNewsEvent({ this.page=1  ,  this.pageSize=20});
+  FetchAllNewsEvent({ this.page=1  ,  this.pageSize=10});
 }

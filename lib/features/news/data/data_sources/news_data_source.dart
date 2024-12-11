@@ -13,15 +13,15 @@ abstract class NewsRemoteDataSource {
 
 class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   final String _baseUrl = 'https://newsapi.org/v2/everything';
-  final String _apiKey = 'bb588dab6e084d69b9772140818108a8'; 
+  final String _apiKey = '80bd6d362d7d4cb59b5d53c00bdccd82'; 
 
   @override
   Future<List<NewsArticle>> fetchNews({required int page, required int pageSize}) async {
 
     final Uri url = Uri.parse(
-        '$_baseUrl?q=technology&from=2024-11-10&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
+        '$_baseUrl?q=technology&from=2024-11-11&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
 
-      // print('$_baseUrl?q=stocks&from=2024-11-10&langauge=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
+      print('$_baseUrl?q=technology&from=2024-11-11&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
 
     try {
       final response = await http.get(url);

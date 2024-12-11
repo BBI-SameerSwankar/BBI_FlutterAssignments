@@ -18,7 +18,7 @@ void main() async{
 
 
 class MainApp extends StatelessWidget {
-  // const MainApp({super.key});
+  
 
    final bool isDarkMode;
 
@@ -26,11 +26,14 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+     print("${isDarkMode} inside main");
+
     return MaterialApp(
           themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: BlocProvider<NewsBloc>(
-        create: (_) => NewsBloc(getAllNews: locator<GetAllNews>() )..add(FetchAllNewsEvent(page: 1,pageSize: 20)) ,
+        create: (_) => NewsBloc(getAllNews: locator<GetAllNews>() )..add(FetchAllNewsEvent(page: 1,pageSize: 10)) ,
         child: NewsList(), 
       ),
     );

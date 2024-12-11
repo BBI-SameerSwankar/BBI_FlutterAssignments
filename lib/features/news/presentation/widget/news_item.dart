@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/core/theme/theme.dart';
 import 'package:news_app/features/news/data/models/news.dart';
 
 class NewsItemWidget extends StatefulWidget {
   final NewsArticle newsArticle;
 
-  const NewsItemWidget({super.key, required this.newsArticle});
+final bool isDarkMode;
+  const NewsItemWidget({super.key, required this.newsArticle, required this.isDarkMode});
 
   @override
   _NewsItemWidgetState createState() => _NewsItemWidgetState();
@@ -12,18 +14,20 @@ class NewsItemWidget extends StatefulWidget {
 
 class _NewsItemWidgetState extends State<NewsItemWidget> {
   bool _isExpanded = false;
+
   bool _showReadMore = false;
   final GlobalKey _textKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    // Check if the text overflows and set the state to show "Read more"
+ 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkTextOverflow();
     });
   }
 
+ 
   void _checkTextOverflow() {
     final RenderBox renderBox = _textKey.currentContext?.findRenderObject() as RenderBox;
     if (renderBox != null) {
@@ -43,9 +47,13 @@ class _NewsItemWidgetState extends State<NewsItemWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+    print("${widget.isDarkMode} inside newsitem");
+
     return Card(
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      color: widget.isDarkMode ?  Themes.darkTheme.card : Themes.lightTheme.card ,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -78,7 +86,7 @@ class _NewsItemWidgetState extends State<NewsItemWidget> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: Colors.black87,
+            color: widget.isDarkMode ? Colors.white :  Colors.black87,
           ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -91,7 +99,7 @@ class _NewsItemWidgetState extends State<NewsItemWidget> {
               key: _textKey,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.black54,
+                color:  widget.isDarkMode ? Colors.grey : Colors.black54,
               ),
               maxLines: _isExpanded ? null : 4,
               overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
@@ -114,7 +122,7 @@ class _NewsItemWidgetState extends State<NewsItemWidget> {
           ],
         ),
         onTap: () {
-          // You can add navigation or action on tap here
+         
         },
       ),
     );

@@ -15,8 +15,8 @@ class NewsList extends StatefulWidget {
 class _NewsListState extends State<NewsList> {
   bool isDarkMode = true;
   int page = 1; 
-  int pageSize = 20; 
-  bool isFetching = false; 
+  int pageSize = 10; 
+
   late ScrollController _scrollController;
 
   @override
@@ -41,15 +41,20 @@ class _NewsListState extends State<NewsList> {
 
   void _scrollListener() {
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      if (!isFetching) {
+     
         _loadMoreData();
-      }
+      
     }
   }
 
   void _loadMoreData() {
   
-    isFetching = true;
+
+    // isFetching = true;
+    if(page == 5)
+    {
+      return;
+    }
     page++;
     print("loading more....${page}");
     context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize));
@@ -88,20 +93,22 @@ class _NewsListState extends State<NewsList> {
               child: Text('Error: ${state.message}', style: TextStyle(color: Colors.red)),
             );
           } else if (state is NewsLoaded) {
-            isFetching = false;
+           
             return RefreshIndicator(
               onRefresh: () => _onRefresh(context),
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: state.newsList.length + (isFetching ? 1 : 0), 
+                itemCount: state.newsList.length + 1, 
                 itemBuilder: (context, index) {
+                  print("${index} and ${state.newsList.length}");
+               
                   if (index == state.newsList.length) {
-                   
+              
                     return const Center(child: CircularProgressIndicator());
                   } else {
                     print(state.newsList.length);
                     final newsArticle = state.newsList[index];
-                    return NewsItemWidget(newsArticle: newsArticle);
+                    return NewsItemWidget(newsArticle: newsArticle, isDarkMode : isDarkMode);
                   }
                 },
               ),

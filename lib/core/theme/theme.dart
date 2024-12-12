@@ -21,18 +21,17 @@ class Themes {
   static ThemeConfig lightTheme = ThemeConfig(
     appBar: Colors.deepPurple,
     background: Colors.purple[50]!,
-    // background: Colors.pink,
     card: Colors.white,
-    mainFont: Colors.deepPurple,
-    subFont: Colors.black.withOpacity(0.7),
+    mainFont: Colors.black87,
+    subFont: Colors.black54,
   );
 
   static ThemeConfig darkTheme = ThemeConfig(
     appBar: Colors.black,
-    background: Colors.grey[850]!,
-    card: Colors.black,
+    card: Colors.grey[850]!,
+    background: Colors.black,
     mainFont: Colors.white,
-    subFont: Colors.grey[400]!,
+    subFont: Colors.grey, 
   );
 
   static Future<void> saveTheme(bool isDarkMode) async {
@@ -42,6 +41,6 @@ class Themes {
 
   static Future<bool> loadTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isDarkMode') ?? false; // Default is false (light theme)
+    return prefs.getBool('isDarkMode') ?? false; 
   }
 }

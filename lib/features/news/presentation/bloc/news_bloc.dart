@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:news_app/core/error/failure.dart';
@@ -17,12 +18,13 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   }
 
 
+
   Future<void> _onFetchAllNews(FetchAllNewsEvent event, Emitter<NewsState> emit) async {
+    print("fetching...  ${event.page} ${event.pageSize} state as ${state}");
     if (state is NewsLoading && event.page == 1) {
       emit(NewsLoading());
     }
 
-    print("fetching...  ${event.page} ${event.pageSize}");
 
 
 

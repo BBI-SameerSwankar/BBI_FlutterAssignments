@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:news_app/core/theme/theme.dart';
 import 'package:news_app/features/news/domain/usecases/get_all_news.dart';
 import 'package:news_app/features/news/presentation/bloc/news_bloc.dart';
@@ -9,6 +10,8 @@ import 'package:news_app/service_locator.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+
   setupLocator();
 
   bool isDarkMode = await Themes.loadTheme();
@@ -30,6 +33,7 @@ class MainApp extends StatelessWidget {
      print("${isDarkMode} inside main");
 
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
           themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: BlocProvider<NewsBloc>(
@@ -37,5 +41,5 @@ class MainApp extends StatelessWidget {
         child: NewsList(), 
       ),
     );
-  }
+  }     
 }

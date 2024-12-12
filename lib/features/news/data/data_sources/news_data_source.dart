@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:news_app/core/config/api_config.dart';
 import 'package:news_app/features/news/data/models/news.dart';
 
 import 'dart:convert';
@@ -12,16 +14,15 @@ abstract class NewsRemoteDataSource {
 
 
 class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
-  final String _baseUrl = 'https://newsapi.org/v2/everything';
-  final String _apiKey = '80bd6d362d7d4cb59b5d53c00bdccd82'; 
+  final String _baseUrl = APIConstants.BASEURL;
+  final String _apiKey = dotenv.env['API_KEY'] ?? ""; 
 
   @override
   Future<List<NewsArticle>> fetchNews({required int page, required int pageSize}) async {
 
     final Uri url = Uri.parse(
-        '$_baseUrl?q=technology&from=2024-11-11&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
+        '$_baseUrl?q=technology&from=2024-11-12&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
 
-      print('$_baseUrl?q=technology&from=2024-11-11&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
 
     try {
       final response = await http.get(url);

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/config/api_config.dart';
 import 'package:news_app/core/theme/theme.dart';
 import 'package:news_app/features/news/presentation/bloc/news_bloc.dart';
 import 'package:news_app/features/news/presentation/bloc/news_event.dart';
 import 'package:news_app/features/news/presentation/bloc/news_state.dart';
-import 'package:news_app/features/news/presentation/widget/news_item.dart';
+import 'package:news_app/features/news/presentation/widget/news/news_item.dart';
+import 'package:news_app/service_locator.dart';
 class NewsList extends StatefulWidget {
   const NewsList({super.key});
 
@@ -48,15 +50,15 @@ class _NewsListState extends State<NewsList> {
   }
 
   void _loadMoreData() {
-  
+    
 
-    // isFetching = true;
-    if(page == 5)
+    if(page == APIConstants.NEWS_PAGE_LIMIT)
     {
       return;
     }
     page++;
-    print("loading more....${page}");
+
+   
     context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize));
   }
 
@@ -64,12 +66,13 @@ class _NewsListState extends State<NewsList> {
     setState(() {
       page = 1; 
     });
-    context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize));
+    locator<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       backgroundColor: isDarkMode ? Themes.darkTheme.background : Themes.lightTheme.background,
       appBar: AppBar(
         title: const Text('News List', style: TextStyle(color: Colors.white)),
@@ -98,7 +101,7 @@ class _NewsListState extends State<NewsList> {
               onRefresh: () => _onRefresh(context),
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: state.newsList.length + 1, 
+                itemCount: state.page == APIConstants.NEWS_PAGE_LIMIT ?  state.newsList.length  : state.newsList.length+1, 
                 itemBuilder: (context, index) {
                   print("${index} and ${state.newsList.length}");
                

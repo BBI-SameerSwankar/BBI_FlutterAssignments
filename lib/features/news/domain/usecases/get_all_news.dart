@@ -9,9 +9,9 @@ class GetAllNews {
   final NewsRepository repository;
   GetAllNews(this.repository);
 
-  Future<Either<Failure ,List<NewsArticle>>> call(int page,int pageSize)
+  Future<Either<Failure ,List<NewsArticle>>> call(int page,int pageSize,String query)
   {
-    return repository.getAllNews(page, pageSize);
+    return repository.getAllNews(page, pageSize,query);
   }
 
 }

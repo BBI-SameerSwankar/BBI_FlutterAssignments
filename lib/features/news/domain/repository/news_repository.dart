@@ -7,7 +7,7 @@ import 'package:news_app/features/news/data/models/news.dart';
 
 abstract interface class NewsRepository {
 
-  Future<Either<Failure,List<NewsArticle> >> getAllNews(int page,int pageSize);
+  Future<Either<Failure,List<NewsArticle> >> getAllNews(int page,int pageSize,String query);
   
 
 

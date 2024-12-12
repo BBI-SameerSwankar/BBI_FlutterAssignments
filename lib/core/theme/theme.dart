@@ -28,8 +28,8 @@ class Themes {
 
   static ThemeConfig darkTheme = ThemeConfig(
     appBar: Colors.black,
-    card: Colors.grey[850]!,
-    background: Colors.black,
+    background: Colors.grey[850]!,
+    card: Colors.black,
     mainFont: Colors.white,
     subFont: Colors.grey, 
   );

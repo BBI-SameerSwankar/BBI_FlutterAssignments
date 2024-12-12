@@ -10,45 +10,62 @@ import 'package:news_app/features/news/presentation/bloc/news_state.dart';
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
   final GetAllNews getAllNews;
 
-
-
-
   NewsBloc({required this.getAllNews}) : super(NewsInitial()) {
     on<FetchAllNewsEvent>(_onFetchAllNews);
   }
 
-
-
   Future<void> _onFetchAllNews(FetchAllNewsEvent event, Emitter<NewsState> emit) async {
-    print("fetching...  ${event.page} ${event.pageSize} state as ${state}");
+    print("fetching... ${event.page} ${event.pageSize} query: ${event.query} state as ${state}");
+
+    
+    if (state is NewsLoaded) {
+      final currentState = state as NewsLoaded;
+      if (currentState.query != event.query) {
+   
+        emit(NewsLoading());
+        try {
+          final Either<Failure, List<NewsArticle>> result = await getAllNews(1, event.pageSize, event.query);
+          result.fold(
+            (failure) {
+              print("error end");
+              emit(NewsError(failure.message));
+            
+              
+            },
+            (newsList) {
+              print("this is response $newsList");
+              emit(NewsLoaded(newsList, 1, event.pageSize, event.query)); 
+            },
+          );
+        } catch (e) {
+          emit(NewsError('An unexpected error occurred: ${e.toString()}'));
+        }
+        return;
+      }
+    }
+
+    // If the query is the same and we're on the first page, show loading
     if (state is NewsLoading && event.page == 1) {
       emit(NewsLoading());
     }
 
-
-
-
+    // Proceed with normal fetch for the requested page
     try {
-      final Either<Failure, List<NewsArticle>> result = await getAllNews(event.page, event.pageSize);
+      final Either<Failure, List<NewsArticle>> result = await getAllNews(event.page, event.pageSize, event.query);
 
-      
       result.fold(
         (failure) {
           emit(NewsError(failure.message));
         },
         (newsList) {
           if (state is NewsLoaded) {
-            
             final currentState = state as NewsLoaded;
-            if(currentState.page != event.page)
-            {
-            print("emmiting..... ${event.page} ${event.pageSize}");
-            emit(NewsLoaded([...currentState.newsList, ...newsList], event.page, event.pageSize));
-
+            if (currentState.page != event.page) {
+              print("emitting new page... ${event.page} ${event.pageSize}");
+              emit(NewsLoaded([...currentState.newsList, ...newsList], event.page, event.pageSize, event.query));
             }
           } else {
-           
-            emit(NewsLoaded(newsList, event.page, event.pageSize));
+            emit(NewsLoaded(newsList, event.page, event.pageSize, event.query));
           }
         },
       );

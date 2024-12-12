@@ -10,9 +10,10 @@ class NewsLoaded extends NewsState {
   final List<NewsArticle> newsList;
   final int page;
   final int pageSize;
+  final String query;
 
 
-  NewsLoaded(this.newsList, this.page , this.pageSize);
+  NewsLoaded(this.newsList, this.page , this.pageSize,this.query);
 }
 
 class NewsError extends NewsState {

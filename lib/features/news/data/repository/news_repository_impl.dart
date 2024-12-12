@@ -15,9 +15,9 @@ class NewsRepositoryImpl implements NewsRepository{
 
 
   @override
-  Future<Either<Failure, List<NewsArticle>>> getAllNews(int page,int pageSize) async{
+  Future<Either<Failure, List<NewsArticle>>> getAllNews(int page,int pageSize,String query) async{
       try{
-        final news = await newsRemoteDataSource.fetchNews(page:page,pageSize: pageSize);
+        final news = await newsRemoteDataSource.fetchNews(page:page,pageSize: pageSize,query: query);
         return Right(news);
       }
       catch(e)

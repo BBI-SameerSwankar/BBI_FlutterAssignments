@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:news_app/core/config/api_config.dart';
@@ -19,16 +20,22 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   Future<List<NewsArticle>> fetchNews({required int page, required int pageSize, required String query}) async {
     // Use the query parameter dynamically in the URL
     final Uri url = Uri.parse(
-        '$_baseUrl?q=$query&from=2024-11-12&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
+        '$_baseUrl?q=$query&from=2024-11-13&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
 
 
-      print('$_baseUrl?q=$query&from=2024-11-12&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
+
+      print('$_baseUrl?q=$query&from=2024-11-13&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
 
     try {
       final response = await http.get(url);
+
       print("response ${response.body}");
       if (response.statusCode == 200) {
+
+
         final Map<String, dynamic> data = json.decode(response.body);
+        APIConstants.setNewsPageLimit( min(  (data["totalResults"] / pageSize).ceil() , 5 ));
+
         final List<dynamic> articlesJson = data['articles'];
 
         return articlesJson.map((articleJson) => NewsArticle.fromJson(articleJson)).toList();

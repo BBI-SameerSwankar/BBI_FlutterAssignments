@@ -70,7 +70,14 @@ class _NewsListState extends State<NewsList> {
       return;
     }
     page++;
+    if(searchParam == "")
+    {
+    context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize));
+    }
+    else{
+
     context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize, query: searchParam));
+    }
   }
 
   Future<void> _onRefresh(BuildContext context) async {
@@ -146,7 +153,7 @@ class _NewsListState extends State<NewsList> {
               onRefresh: () => _onRefresh(context),
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: state.page == APIConstants.NEWS_PAGE_LIMIT
+                itemCount: (state.page == APIConstants.NEWS_PAGE_LIMIT  && state.newsList.length > 0 )
                     ? state.newsList.length
                     : state.newsList.length + 1,
                 itemBuilder: (context, index) {
@@ -197,16 +204,16 @@ class NewsSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.arrow_back), // Back button
+      icon: const Icon(Icons.arrow_back), 
       onPressed: () {
-        close(context, null); // Close the search
+        close(context, null);
       },
     );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container();  // Optionally, show suggestions
+    return Container();  
   }
 
  @override
@@ -215,10 +222,10 @@ Widget buildResults(BuildContext context) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     onSearchChanged(query); 
     setSearchParam(query);
-    Navigator.pop(context);   // Close the search overlay
+    Navigator.pop(context);   
   });
 
-  // Optionally, you can return a loading indicator if you want to show something while waiting for the results
+
   return Center(child: CircularProgressIndicator());
 }
 
@@ -228,7 +235,7 @@ Widget buildResults(BuildContext context) {
       IconButton(
         icon: const Icon(Icons.clear),
         onPressed: () {
-          query = ''; // Clear the search query
+          query = ''; 
         },
       ),
     ];

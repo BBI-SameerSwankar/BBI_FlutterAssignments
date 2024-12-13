@@ -44,12 +44,12 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       }
     }
 
-    // If the query is the same and we're on the first page, show loading
+  
     if (state is NewsLoading && event.page == 1) {
       emit(NewsLoading());
     }
 
-    // Proceed with normal fetch for the requested page
+ 
     try {
       final Either<Failure, List<NewsArticle>> result = await getAllNews(event.page, event.pageSize, event.query);
 

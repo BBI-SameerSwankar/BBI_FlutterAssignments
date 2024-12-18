@@ -20,7 +20,7 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   Future<List<NewsArticle>> fetchNews({required int page, required int pageSize, required String query}) async {
     // Use the query parameter dynamically in the URL
     final Uri url = Uri.parse(
-        '$_baseUrl?q=$query&from=2024-11-13&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
+        '$_baseUrl?q=$query&from=2024-11-18&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
 
 
 

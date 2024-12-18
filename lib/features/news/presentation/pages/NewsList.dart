@@ -19,7 +19,7 @@ class _NewsListState extends State<NewsList> {
   bool isDarkMode = true;
   int page = 1;
   int pageSize = 10;
-  String searchParam="";
+  String searchParam = "";
   late ScrollController _scrollController;
   bool _isScrolledToTop = false;
   TextEditingController _searchController = TextEditingController();
@@ -31,11 +31,9 @@ class _NewsListState extends State<NewsList> {
     _scrollController = ScrollController()..addListener(_scrollListener);
   }
 
-  void setSearchParam(String s){
+  void setSearchParam(String s) {
     searchParam = s;
   }
-
-
 
   void _loadTheme() async {
     isDarkMode = await Themes.loadTheme();
@@ -70,13 +68,10 @@ class _NewsListState extends State<NewsList> {
       return;
     }
     page++;
-    if(searchParam == "")
-    {
-    context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize));
-    }
-    else{
-
-    context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize, query: searchParam));
+    if (searchParam == "") {
+      context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize));
+    } else {
+      context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize, query: searchParam));
     }
   }
 
@@ -96,21 +91,16 @@ class _NewsListState extends State<NewsList> {
   }
 
   void _onSearchChanged(String query) {
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        page = 1; 
+        page = 1;
       });
-      if(query == "")
-      {
-      context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize));
-      }
-      else{
-      context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize,query: query));
-
+      if (query == "") {
+        context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize));
+      } else {
+        context.read<NewsBloc>().add(FetchAllNewsEvent(page: page, pageSize: pageSize, query: query));
       }
     });
-    
   }
 
   @override
@@ -133,14 +123,13 @@ class _NewsListState extends State<NewsList> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: NewsSearchDelegate(_onSearchChanged, setSearchParam),
+                delegate: NewsSearchDelegate(_onSearchChanged, setSearchParam, isDarkMode),
               );
             },
           ),
         ],
       ),
-      body: 
-      BlocBuilder<NewsBloc, NewsState>(
+      body: BlocBuilder<NewsBloc, NewsState>(
         builder: (context, state) {
           if (state is NewsLoading && page == 1) {
             return const Center(child: CircularProgressIndicator());
@@ -148,12 +137,12 @@ class _NewsListState extends State<NewsList> {
             return Center(
               child: Text('Error: ${state.message}', style: TextStyle(color: Colors.red)),
             );
-          } else if (state is NewsLoaded) {
+          } else if (state is NewsLoaded && state.newsList.isNotEmpty) {
             return RefreshIndicator(
               onRefresh: () => _onRefresh(context),
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: (state.page == APIConstants.NEWS_PAGE_LIMIT  && state.newsList.length > 0 )
+                itemCount: (state.page == APIConstants.NEWS_PAGE_LIMIT && state.newsList.isNotEmpty)
                     ? state.newsList.length
                     : state.newsList.length + 1,
                 itemBuilder: (context, index) {
@@ -171,7 +160,6 @@ class _NewsListState extends State<NewsList> {
           }
         },
       ),
-      
       floatingActionButton: _isScrolledToTop
           ? FloatingActionButton(
               onPressed: _scrollToTop,
@@ -192,8 +180,9 @@ class _NewsListState extends State<NewsList> {
 class NewsSearchDelegate extends SearchDelegate {
   final Function(String) onSearchChanged;
   final Function(String) setSearchParam;
+  final bool isDarkMode;
 
-  NewsSearchDelegate(this.onSearchChanged, this.setSearchParam);
+  NewsSearchDelegate(this.onSearchChanged, this.setSearchParam, this.isDarkMode);
 
   @override
   String? get searchFieldLabel => 'Search News...';
@@ -204,7 +193,7 @@ class NewsSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.arrow_back), 
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, null);
       },
@@ -213,21 +202,19 @@ class NewsSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container();  
+    return Container(color: isDarkMode ? Themes.darkTheme.background : Themes.lightTheme.background,);
   }
 
- @override
-Widget buildResults(BuildContext context) {
- 
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    onSearchChanged(query); 
-    setSearchParam(query);
-    Navigator.pop(context);   
-  });
+  @override
+  Widget buildResults(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onSearchChanged(query);
+      setSearchParam(query);
+      Navigator.pop(context);
+    });
 
-
-  return Center(child: CircularProgressIndicator());
-}
+    return Center(child: CircularProgressIndicator());
+  }
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -235,9 +222,38 @@ Widget buildResults(BuildContext context) {
       IconButton(
         icon: const Icon(Icons.clear),
         onPressed: () {
-          query = ''; 
+          query = '';
         },
       ),
     ];
   }
+
+
+
+
+
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+      primaryColor: isDarkMode ? Colors.black : null,  
+      primaryTextTheme:  TextTheme(),
+      appBarTheme: AppBarTheme(
+        backgroundColor: isDarkMode ? Colors.black : null,  // AppBar background
+        iconTheme: IconThemeData(color: isDarkMode ? Colors.white : Colors.black),  // AppBar icon color
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: TextStyle(color: isDarkMode ? Colors.white60 : Colors.black45), 
+        suffixStyle: TextStyle( color: Colors.red)
+    
+      ),
+       textTheme: TextTheme(
+      
+      
+      titleLarge: TextStyle(color: isDarkMode ? Themes.darkTheme.mainFont : Themes.lightTheme.mainFont)  // Custom text color in search field
+    ),
+    );
+  }
+
+
 }

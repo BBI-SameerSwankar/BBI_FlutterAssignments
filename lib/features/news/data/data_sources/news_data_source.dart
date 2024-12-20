@@ -13,6 +13,13 @@ abstract class NewsRemoteDataSource {
 }
 
 class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
+
+
+  final http.Client client;
+
+  NewsRemoteDataSourceImpl(this.client);
+
+
   final String _baseUrl = APIConstants.BASEURL;
   final String _apiKey = dotenv.env['API_KEY'] ?? ""; 
 
@@ -20,14 +27,14 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   Future<List<NewsArticle>> fetchNews({required int page, required int pageSize, required String query}) async {
     // Use the query parameter dynamically in the URL
     final Uri url = Uri.parse(
-        '$_baseUrl?q=$query&from=2024-11-18&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
+        '$_baseUrl?q=$query&from=2024-11-19&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
 
 
 
-      print('$_baseUrl?q=$query&from=2024-11-13&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
+      // print('$_baseUrl?q=$query&from=2024-11-13&language=en&sortBy=publishedAt&apiKey=$_apiKey&page=$page&pageSize=$pageSize');
 
     try {
-      final response = await http.get(url);
+      final response = await client.get(url);
 
       print("response ${response.body}");
       if (response.statusCode == 200) {

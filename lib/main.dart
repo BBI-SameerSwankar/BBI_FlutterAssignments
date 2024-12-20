@@ -34,8 +34,8 @@ class MainApp extends StatelessWidget {
 
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-          themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      //     themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      // theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: BlocProvider<NewsBloc>(
         create: (_) => NewsBloc(getAllNews: locator<GetAllNews>() )..add(FetchAllNewsEvent(page: 1,pageSize: 10)) ,
         child: NewsList(), 

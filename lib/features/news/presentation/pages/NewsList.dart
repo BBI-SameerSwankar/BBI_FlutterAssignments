@@ -150,6 +150,7 @@ class _NewsListState extends State<NewsList> {
                     return const Center(child: CircularProgressIndicator());
                   } else {
                     final newsArticle = state.newsList[index];
+                    print(newsArticle.urlToImage);
                     return NewsItemWidget(newsArticle: newsArticle, isDarkMode: isDarkMode);
                   }
                 },

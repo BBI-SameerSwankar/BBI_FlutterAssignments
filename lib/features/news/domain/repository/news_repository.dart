@@ -11,4 +11,4 @@ abstract interface class NewsRepository {
   
 
 
-}
+} 

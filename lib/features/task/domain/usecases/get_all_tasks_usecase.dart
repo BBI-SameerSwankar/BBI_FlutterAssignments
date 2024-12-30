@@ -10,7 +10,7 @@ class GetAllTaskUsecase {
   final TaskRepository repository;
   GetAllTaskUsecase(this.repository);
 
-  Future<Either<Failure ,void >> call( String userId)
+  Future<Either<Failure ,List<TaskModel> >> call( String userId)
   {
     return repository.getAllTasks(userId);
   }

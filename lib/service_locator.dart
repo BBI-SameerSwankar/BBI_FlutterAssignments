@@ -10,6 +10,14 @@ import 'package:task_app/features/auth/domain/usecases/get_user_id_usecase.dart'
 import 'package:task_app/features/auth/domain/usecases/login_user_usecase.dart';
 import 'package:task_app/features/auth/domain/usecases/logout_user_usecase.dart';
 import 'package:task_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:task_app/features/task/data/data_sources/task_remote_data_source.dart';
+import 'package:task_app/features/task/data/repository/task_repository_impl.dart';
+import 'package:task_app/features/task/domain/repository/task_repository.dart';
+import 'package:task_app/features/task/domain/usecases/add_task.dart';
+import 'package:task_app/features/task/domain/usecases/delete_task_usecase.dart';
+import 'package:task_app/features/task/domain/usecases/edit_task_usecase.dart';
+import 'package:task_app/features/task/domain/usecases/get_all_tasks_usecase.dart';
+import 'package:task_app/features/task/presentation/Bloc/task_bloc.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -37,6 +45,8 @@ void setupLocator() async{
   locator.registerLazySingleton<LoginUserUsecase>(() => LoginUserUsecase(locator<AuthRepository>()));
   locator.registerLazySingleton<LogoutUserUsecase>(() => LogoutUserUsecase(locator<AuthRepository>()));
   locator.registerLazySingleton<GetUserIdUsecase>(() => GetUserIdUsecase(locator<AuthRepository>()));
+
+
   
   // Register AuthBloc
   locator.registerFactory<AuthBloc>(() => AuthBloc(
@@ -45,4 +55,34 @@ void setupLocator() async{
       logoutUserUsecase: locator<LogoutUserUsecase>(),
       getUserIdUsecase: locator<GetUserIdUsecase>(),
   ));
+
+
+
+    locator.registerLazySingleton<TaskRemoteDataSource>(() => TaskRemoteDataSourceImpl(
+
+  ));
+
+
+    locator.registerLazySingleton<TaskRepository>(() => TaskRepositoryImpl(
+      locator()
+  ));
+  
+
+  locator.registerLazySingleton<GetAllTaskUsecase>(() => GetAllTaskUsecase(locator<TaskRepository>()));
+  locator.registerLazySingleton<AddTaskUsecase>(() => AddTaskUsecase(locator<TaskRepository>()));
+  locator.registerLazySingleton<EditTaskUsecase>(() => EditTaskUsecase(locator<TaskRepository>()));
+  locator.registerLazySingleton<DeleteTaskUsecase>(() => DeleteTaskUsecase(locator<TaskRepository>()));
+  
+
+  locator.registerFactory<TaskBloc>(() => TaskBloc(
+
+      fetchTasks: locator<GetAllTaskUsecase>(),
+      addTask: locator<AddTaskUsecase>(),
+      deleteTask: locator<DeleteTaskUsecase>(),
+      editTask: locator<EditTaskUsecase>(),
+      // getUserIdUsecase: locator<GetUserIdUsecase>(),
+  ));
+
+
+
 }

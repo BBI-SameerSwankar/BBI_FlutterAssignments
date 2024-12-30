@@ -14,9 +14,9 @@ class GetUserIdUsecase {
   final AuthRepository authRepository;
   GetUserIdUsecase(this.authRepository);
 
-  Future<Either<Failure ,UserModel >> call()
+  Future<Either<Failure ,UserModel >> call() async
   {
-    return authRepository.getUserIdFromLocal();
+    return await authRepository.getUserIdFromLocal();
   }
 
 

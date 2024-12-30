@@ -4,7 +4,7 @@ import 'package:task_app/features/task/data/data_sources/task_remote_data_source
 import 'package:task_app/features/task/domain/entity/task_model.dart';
 import 'package:task_app/features/task/domain/repository/task_repository.dart';
 
-abstract class TaskRepositoryImpl extends TaskRepository {
+class TaskRepositoryImpl extends TaskRepository {
   final TaskRemoteDataSource taskRemoteDataSource;
 
   TaskRepositoryImpl(this.taskRemoteDataSource);

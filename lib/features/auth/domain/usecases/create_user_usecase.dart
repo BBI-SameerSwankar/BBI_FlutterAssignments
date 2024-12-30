@@ -12,9 +12,9 @@ class CreateUserUsecase {
   final AuthRepository authRepository;
   CreateUserUsecase(this.authRepository);
 
-  Future<Either<Failure ,UserModel >> call()
+  Future<Either<Failure ,UserModel >> call() async
   {
-    return authRepository.createUser();
+    return await authRepository.createUser();
   }
 
 

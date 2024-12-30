@@ -7,9 +7,10 @@ import 'package:task_app/features/auth/presentation/bloc/auth_event.dart';
 
 import 'package:task_app/features/auth/presentation/pages/authentication_page.dart';
 import 'package:task_app/features/auth/presentation/pages/register_user.dart';
-import 'package:task_app/features/task/presentation/pages/tast_screen.dart'; // Task screen
+import 'package:task_app/features/task/presentation/Bloc/task_bloc.dart';
+import 'package:task_app/features/task/presentation/pages/tast_screen.dart'; 
 import 'package:task_app/firebase_options.dart';
-import 'package:task_app/service_locator.dart'; // For dependency injection
+import 'package:task_app/service_locator.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +29,11 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthBloc>(
           create: (context) => locator<AuthBloc>()..add(GetUserIdFromLocal()),
         ),
+        BlocProvider<TaskBloc>(
+          create: (context) => locator<TaskBloc>(),
+        ),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: AuthStateWrapper(),
       ),
@@ -42,28 +46,30 @@ class AuthStateWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthLoading) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (state is AuthInitial) {
-          // Show the authentication screen (Login or Register page)
-          return AuthenticationPage();
+         
+          return const AuthenticationPage();
         } else if (state is UserLoggedIn) {
-          // Show the main app screen with the user ID
+         
           return TaskScreen(userId: state.userId);
         } else if (state is UserRegister) {
-          // Show the register screen
-          return RegisterUser();
+
+          return const RegisterUser();
         } else if (state is AuthError) {
-          // Show error message
+         
           return Scaffold(
             body: Center(child: Text("Error: ${state.message}")),
           );
         }
         return Container();
       },
-    );
+    ); 
   }
 }
 

@@ -1,29 +1,40 @@
 
+import 'package:task_app/features/task/domain/entity/task_model.dart';
+
 abstract class TaskEvent {}
 
-class TaskLoaded extends TaskEvent {}
+
 
 class AddTaskEvent extends TaskEvent {
-  final String title;
-  final String description;
+  final TaskModel task;
+  final String userId;
 
-  AddTaskEvent({required this.title, required this.description});
+  AddTaskEvent({required this.task, required this.userId});
 }
 
 class EditTaskEvent extends TaskEvent {
-  final int id;
-  final String title;
-  final String description;
+  final TaskModel task;
+  final String userId;
 
   EditTaskEvent({
-    required this.id,
-    required this.title,
-    required this.description,
+    required this.userId,
+    required this.task
   });
 }
 
 class DeleteTaskEvent extends TaskEvent {
-  final int id;
+  final TaskModel task;
+  final String userId;
 
-  DeleteTaskEvent({required this.id});
+  DeleteTaskEvent({
+    required this.userId,
+    required this.task
+  });
+}
+
+class FetchTasksEvent extends TaskEvent {
+
+  final String id;
+
+  FetchTasksEvent({required this.id});
 }

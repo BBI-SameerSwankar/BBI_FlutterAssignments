@@ -20,15 +20,15 @@ class TaskError extends TaskState {
   TaskError({required this.message});
 }
 
-class TaskOperationSuccess extends TaskState {
-  final List<TaskModel> tasks;
+// class TaskOperationSuccess extends TaskState {
+//   final List<TaskModel> tasks;
 
-  TaskOperationSuccess({required this.tasks});
-}
+//   TaskOperationSuccess({required this.tasks});
+// }
 
-class TaskOperationFailure extends TaskState {
-  final String message;
+// class TaskOperationFailure extends TaskState {
+//   final String message;
 
-  TaskOperationFailure({required this.message});
-}
+//   TaskOperationFailure({required this.message});
+// }
 

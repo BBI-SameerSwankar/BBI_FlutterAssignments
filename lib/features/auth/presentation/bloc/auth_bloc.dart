@@ -43,9 +43,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     final result = await getUserIdUsecase.call();
-
+    print("hadsfdf");
+  
     result.fold(
-      (failure) => emit(AuthError(message: failure.toString())),
+      (failure) 
+      {
+              print(failure.message);
+              emit(AuthInitial());
+            // emit(AuthError(message: failure.toString()));
+      },
       (userModel) {
         if (userModel.userId.isNotEmpty) {
           emit(UserLoggedIn(userId: userModel.userId));
@@ -62,13 +68,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLogoutUser(LogoutUserEvent event, Emitter<AuthState> emit) async {
 
-    
+    print("logout");
     emit(AuthLoading());
  
     final result = await logoutUserUsecase.call();
+    print(result);
 
     result.fold(
-      (failure) => emit(AuthError(message: failure.toString())),
+      (failure) { 
+        print(failure.message);
+        emit(AuthError(message: failure.toString())); 
+        },
       (_) => emit(AuthInitial()),
     );
   }

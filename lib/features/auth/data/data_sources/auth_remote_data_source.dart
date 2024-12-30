@@ -25,14 +25,15 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       final currentUserId = snapshot.exists && snapshot.value != null
           ? (snapshot.value as int)
           : 0;
-
+ 
       final newUserId = 'user_${currentUserId + 1}';
       await userCountRef.set(currentUserId + 1);
-      
       // Create a new user in the database
+    print(newUserId);
       await usersRef.child(newUserId).set({
         'userId': newUserId,
       });
+   print("here");
 
       // Save user ID locally after successful creation
       await _authLocalDataSource.saveUserId(newUserId);

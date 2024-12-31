@@ -1,6 +1,5 @@
-import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_app/features/auth/domain/entity/user_model.dart';
 import 'package:task_app/features/task/domain/entity/task_model.dart';
 import 'package:task_app/features/task/domain/usecases/add_task.dart';
 import 'package:task_app/features/task/domain/usecases/delete_task_usecase.dart';
@@ -38,6 +37,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   // Handle fetching tasks
   Future<void> _onFetchTasks(FetchTasksEvent event, Emitter<TaskState> emit) async {
+      
     emit(TaskLoading());
     final res = await fetchTasks.call(event.id);
     res.fold(
@@ -53,7 +53,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   // Handle adding a task
   Future<void> _onAddTask(AddTaskEvent event, Emitter<TaskState> emit) async {
-    emit(TaskLoading());
+    print(_sortedTasks);
+    // emit(TaskLoading());
     final res = await addTask.call(event.userId, event.task);
     res.fold(
       (l) => emit(TaskError(message: l.message)),
@@ -76,7 +77,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         // Update the task and resort the list
         _sortedTasks = _sortedTasks.map((task) {
           return task.id == event.task.id ? event.task : task;
-        }).toList();
+        }).toList(); 
         _sortedTasks = _sortTasksByDueDate(_sortedTasks);
         emit(TaskLoadedState(tasks: _sortedTasks));
       },
@@ -86,10 +87,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   // Handle deleting a task
   Future<void> _onDeleteTask(DeleteTaskEvent event, Emitter<TaskState> emit) async {
     // emit(TaskLoading());
-    print("deleting");
-    print(event.userId);
-    print(event.task.id);
-    print("look at this");
+  
+
     final res = await deleteTask.call(event.userId , event.task);
     print(res);
     res.fold(

@@ -54,7 +54,7 @@ void main() {
 
     test('should successfully log in a user', () async {
       // Arrange
-      when(() => mockRemoteDataSource.loginUser(any())).thenAnswer(
+      when(() => mockRemoteDataSource.loginUser(userModel)).thenAnswer(
         (_) async => Right(userModel),
       );
 
@@ -68,7 +68,7 @@ void main() {
 
     test('should return Failure when logging in a user fails', () async {
       // Arrange
-      when(() => mockRemoteDataSource.loginUser(any())).thenThrow(Exception('Error'));
+      when(() => mockRemoteDataSource.loginUser(userModel)).thenThrow(Exception('Error'));
 
       // Act
       final result = await authRepository.loginUser(userModel);

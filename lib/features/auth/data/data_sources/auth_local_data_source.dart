@@ -16,7 +16,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<void> saveUserId(String userId) async {
     await sharedPreferences.setString('user_id', userId);
-  }
+  } 
 
   @override
   Future<String?> getUserId() async {

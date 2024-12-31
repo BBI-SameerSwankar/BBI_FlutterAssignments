@@ -50,10 +50,18 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
       final snapshot = await _taskRef.child(userId).get();
 
       if (snapshot.exists) {
+
         final Map<dynamic, dynamic> tasksMap = snapshot.value as Map<dynamic, dynamic>;
+      
+       
         List<TaskModel> tasks = tasksMap.entries.map((entry) {
           return TaskModel.fromJson(entry.value, entry.key);
         }).toList();
+
+        print("in remote....");
+        
+        print(tasks[0].id);
+
         return tasks;
       } else {
         return [];
@@ -63,4 +71,4 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
       throw Exception("Failed to fetch tasks");
     }
   }
-}
+} 

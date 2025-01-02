@@ -6,8 +6,9 @@ import 'package:task_app/features/task/domain/entity/task_model.dart';
 
 class EditTaskScreen extends StatefulWidget {
   final TaskModel task;
+  final userId;
 
-  const EditTaskScreen({Key? key, required this.task}) : super(key: key);
+  const EditTaskScreen({Key? key, required this.userId,required this.task}) : super(key: key);
 
   @override
   _EditTaskScreenState createState() => _EditTaskScreenState();
@@ -179,7 +180,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       priority: _priority,
     );
 
-    BlocProvider.of<TaskBloc>(context).add(EditTaskEvent(userId: widget.task.id, task: updatedTask));
+    BlocProvider.of<TaskBloc>(context).add(EditTaskEvent(userId: widget.userId, task: updatedTask));
     Navigator.pop(context); // Close the screen
   }
 }

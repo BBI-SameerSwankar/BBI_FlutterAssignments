@@ -1,4 +1,5 @@
 
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/features/task/domain/entity/task_model.dart';
 import 'package:task_app/features/task/domain/usecases/add_task.dart';
@@ -8,7 +9,7 @@ import 'package:task_app/features/task/domain/usecases/get_all_tasks_usecase.dar
 import 'package:task_app/features/task/presentation/Bloc/task_event.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_state.dart';
 
-
+// task_bloc.dart
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final GetAllTaskUsecase fetchTasks;
   final AddTaskUsecase addTask;
@@ -16,6 +17,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final DeleteTaskUsecase deleteTask;
 
   List<TaskModel> _sortedTasks = [];
+  bool _ascending = true;
 
   TaskBloc({
     required this.fetchTasks,
@@ -27,25 +29,30 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<AddTaskEvent>(_onAddTask);
     on<EditTaskEvent>(_onEditTask);
     on<DeleteTaskEvent>(_onDeleteTask);
+    on<FilterTasksEvent>(_onFilterTasks);  // New event handler for filtering
   }
 
   // Sort tasks by due date
-  List<TaskModel> _sortTasksByDueDate(List<TaskModel> tasks) {
-    tasks.sort((a, b) => a.dueDate.compareTo(b.dueDate));
+ List<TaskModel> _sortTasksByDueDate(List<TaskModel> tasks, {bool ascending = true}) {
+    tasks.sort((a, b) {
+      final comparison = a.dueDate.compareTo(b.dueDate);
+      return ascending ? comparison : -comparison; // Ascending or descending
+    });
+    
     return tasks;
   }
 
+
   // Handle fetching tasks
   Future<void> _onFetchTasks(FetchTasksEvent event, Emitter<TaskState> emit) async {
-      
     emit(TaskLoading());
     final res = await fetchTasks.call(event.id);
     res.fold(
-      (l){
+      (l) {
         emit(TaskError(message: l.message));
       },
       (r) {
-        _sortedTasks = _sortTasksByDueDate(r);
+        _sortedTasks = _sortTasksByDueDate(r,ascending: _ascending);  // Default to ascending order
         emit(TaskLoadedState(tasks: _sortedTasks));
       },
     );
@@ -53,15 +60,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   // Handle adding a task
   Future<void> _onAddTask(AddTaskEvent event, Emitter<TaskState> emit) async {
-    print(_sortedTasks);
-    // emit(TaskLoading());
     final res = await addTask.call(event.userId, event.task);
     res.fold(
       (l) => emit(TaskError(message: l.message)),
       (r) {
-        // Add the new task to the sorted list
         _sortedTasks.add(event.task);
-        _sortedTasks = _sortTasksByDueDate(_sortedTasks);
+        _sortedTasks = _sortTasksByDueDate(_sortedTasks); // Sort after adding
         emit(TaskLoadedState(tasks: _sortedTasks));
       },
     );
@@ -69,16 +73,16 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   // Handle editing a task
   Future<void> _onEditTask(EditTaskEvent event, Emitter<TaskState> emit) async {
-    emit(TaskLoading());
-    final res = await editTask.call(event.userId,  event.task);
+    print("thios  is in blloc");
+    print(event.userId);
+    final res = await editTask.call(event.userId, event.task);
     res.fold(
       (l) => emit(TaskError(message: l.message)),
       (r) {
-        // Update the task and resort the list
         _sortedTasks = _sortedTasks.map((task) {
           return task.id == event.task.id ? event.task : task;
-        }).toList(); 
-        _sortedTasks = _sortTasksByDueDate(_sortedTasks);
+        }).toList();
+        _sortedTasks = _sortTasksByDueDate(_sortedTasks);  // Resort after editingev
         emit(TaskLoadedState(tasks: _sortedTasks));
       },
     );
@@ -86,18 +90,21 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   // Handle deleting a task
   Future<void> _onDeleteTask(DeleteTaskEvent event, Emitter<TaskState> emit) async {
-    // emit(TaskLoading());
-  
-
-    final res = await deleteTask.call(event.userId , event.task);
-    print(res);
+    final res = await deleteTask.call(event.userId, event.task);
     res.fold(
       (l) => emit(TaskError(message: l.message)),
       (r) {
-        // Remove the task from the sorted list
         _sortedTasks.removeWhere((task) => task.id == event.task.id);
         emit(TaskLoadedState(tasks: _sortedTasks));
       },
     );
+  }
+
+  // Handle filtering tasks by due date order (ascending or descending)
+  void _onFilterTasks(FilterTasksEvent event, Emitter<TaskState> emit) {
+    print(event.ascending);
+    _ascending = event.ascending;
+    _sortedTasks = _sortTasksByDueDate(_sortedTasks, ascending: event.ascending);
+    emit(TaskLoadedState(tasks: _sortedTasks));
   }
 }

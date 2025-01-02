@@ -1,3 +1,5 @@
+
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:task_app/features/task/domain/entity/task_model.dart';
 
@@ -35,9 +37,24 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
 
   @override
   Future<void> editTask(String userId, TaskModel task) async {
+      final DatabaseReference newRef = FirebaseDatabase.instance.ref('tasks');
+
+      print("editingy.........");
+      print(userId);
+      print(task.id);
+      print(task.title);
     try {
-      final taskRef = _taskRef.child(userId).child(task.id);
-      await taskRef.update(task.toJson());
+ 
+      final taskRef = newRef.child(userId).child(task.id);
+      // await taskRef.update(task.toJson());
+          await taskRef.update({
+      'title': task.title,
+      'description': task.description,
+      'dueDate': task.dueDate.toIso8601String(),
+      'priority': task.priority.name,
+    });
+
+
     } catch (e) {
       print("Error editing task: $e");
       throw Exception("Failed to edit task");

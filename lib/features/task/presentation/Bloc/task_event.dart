@@ -1,9 +1,7 @@
-
+// task_event.dart
 import 'package:task_app/features/task/domain/entity/task_model.dart';
 
 abstract class TaskEvent {}
-
-
 
 class AddTaskEvent extends TaskEvent {
   final TaskModel task;
@@ -33,8 +31,13 @@ class DeleteTaskEvent extends TaskEvent {
 }
 
 class FetchTasksEvent extends TaskEvent {
-
   final String id;
 
   FetchTasksEvent({required this.id});
+}
+
+class FilterTasksEvent extends TaskEvent {
+  final bool ascending;
+
+  FilterTasksEvent({required this.ascending});
 }

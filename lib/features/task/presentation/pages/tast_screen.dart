@@ -149,23 +149,17 @@ class _TaskScreenState extends State<TaskScreen> {
               );
             }
 
-           
             return ListView.builder(
-              itemCount: tasks.length ,
+              itemCount: tasks.length,
               itemBuilder: (context, index) {
-             
-
-          
-
                 final task = tasks[index];
 
                 if (_selectedPriority == "all") {
-              
                   return TaskListItem(task: task, userId: widget.userId);
                 } else if (_selectedPriority == task.priority.name) {
-                
                   return TaskListItem(task: task, userId: widget.userId);
                 }
+                return Container();
               },
             );
           } else {
@@ -175,16 +169,8 @@ class _TaskScreenState extends State<TaskScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to Add Task Screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddTaskScreen(userId: widget.userId),
-            ),
-          ).then((_) {
-            BlocProvider.of<TaskBloc>(context)
-                .add(FetchTasksEvent(id: widget.userId));
-          });
+          // Navigate to Add Task Screen using named route
+          Navigator.pushNamed(context, '/addTask', arguments: widget.userId);
         },
         backgroundColor: Colors.blueAccent,
         child: Icon(Icons.add, color: Colors.white),
@@ -281,17 +267,12 @@ class _TaskListItemState extends State<TaskListItem>
                 IconButton(
                   icon: Icon(Icons.edit, color: Colors.lightBlue),
                   onPressed: () {
-                    // Navigate to Edit Task Screen
-                    Navigator.push(
+                    // Navigate to Edit Task Screen using named route
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            EditTaskScreen(userId: widget.userId, task: task),
-                      ),
-                    ).then((_) {
-                      BlocProvider.of<TaskBloc>(context)
-                          .add(FetchTasksEvent(id: widget.userId));
-                    });
+                      '/editTask',
+                      arguments: {'userId': widget.userId, 'task': task},
+                    );
                   },
                 ),
                 IconButton(

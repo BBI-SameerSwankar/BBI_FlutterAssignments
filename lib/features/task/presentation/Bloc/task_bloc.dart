@@ -105,6 +105,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     print("deleting....");
     print(event.userId);
     print(event.task.id);
+     emit(TaskLoading());
     final res = await deleteTask.call(event.userId, event.task);
     res.fold(
       (l) => emit(TaskError(message: l.message)),

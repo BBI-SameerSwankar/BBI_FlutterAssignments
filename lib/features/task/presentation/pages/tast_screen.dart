@@ -26,6 +26,7 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
+     isEmptyTaskList = true;
     BlocProvider.of<TaskBloc>(context).add(ClearAllTasks());
     _loadPreferences(); // Load preferences when screen is initialized
     // Fetch tasks on screen load

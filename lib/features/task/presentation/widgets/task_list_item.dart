@@ -85,7 +85,9 @@ class _TaskListItemState extends State<TaskListItem>
                     BlocProvider.of<TaskBloc>(context).add(
                     
                         DeleteTaskEvent(userId: widget.userId, task: task));
+                         setState(() {});
                   },
+                  
                 ),
               ],
             ),
@@ -113,10 +115,10 @@ class _TaskListItemState extends State<TaskListItem>
                           title: Text('Priority: ${task.priority.name}',
                               style: TextStyle(fontSize: 14)),
                         ),
-                        ListTile(
-                          title: Text('Due Date: ${task.dueDate}',
-                              style: TextStyle(fontSize: 14)),
-                        ),
+                        // ListTile(
+                        //   title: Text('Due Date: ${task.dueDate}',
+                        //       style: TextStyle(fontSize: 14)),
+                        // ),
                       ],
                     ),
                   )

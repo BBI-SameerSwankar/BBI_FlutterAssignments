@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:task_app/features/auth/presentation/bloc/auth_event.dart';
-import 'package:task_app/service_locator.dart';
+
 
 class RegisterUser extends StatefulWidget {
   const RegisterUser({super.key});

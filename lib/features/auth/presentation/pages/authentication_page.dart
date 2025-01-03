@@ -12,6 +12,11 @@ class AuthenticationPage extends StatefulWidget {
 }
 
 class _AuthenticationPageState extends State<AuthenticationPage> {
+  final TextEditingController _userIdController = TextEditingController();
+
+  // Form key to validate fields
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +25,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+             ElevatedButton(
               onPressed: () {
                 context.read<AuthBloc>().add(CreateUserEvent());
               },
@@ -48,9 +53,21 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Enter User ID"),
-          content: TextField(
-            controller: userIdController,
-            decoration: InputDecoration(hintText: "Enter your User ID"),
+          content: Form(
+            key: _formKey,  // Attach the form key for validation
+            child: TextFormField(
+              controller: userIdController,
+              decoration: InputDecoration(hintText: "Enter your User ID"),
+              validator: (value) {
+                // Validate user ID input
+                if (value == null || value.isEmpty) {
+                  return 'User ID cannot be empty';
+                } else if (value.length < 3) {
+                  return 'User ID must be at least 3 characters';
+                }
+                return null;
+              },
+            ),
           ),
           actions: [
             TextButton(
@@ -61,17 +78,13 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                final userId = userIdController.text.trim();
-                if (userId.isNotEmpty) {
-                  // Dispatch LoginUserEvent with the userId
+                // Validate userId before login
+                if (_formKey.currentState?.validate() ?? false) {
+                  final userId = userIdController.text.trim();
+             
                   context.read<AuthBloc>().add(LoginUserEvent(userId: userId));
                   Navigator.of(context).pop(); // Close the dialog after login
-                } else {
-                  // Optionally, show an error if the userId is empty
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Please enter a User ID")),
-                  );
-                }
+                } 
               },
               child: Text("Login"),
             ),

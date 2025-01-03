@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:task_app/core/error/failure.dart';
+import 'package:task_app/core/utils/shared_preference_helper.dart';
 import 'package:task_app/features/auth/data/data_sources/auth_local_data_source.dart';
 import 'package:task_app/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:task_app/features/auth/domain/entity/user_model.dart';
@@ -54,6 +55,8 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<Either<Failure, void>> logoutUser() async {
     try {
       await localDataSource.clearUserId();
+      await SharedPreferencesHelper.clearFilterPreferences();
+
       return const Right(null);
     } catch (e) {
       return Left(Failure('Error logging out user: ${e.toString()}'));

@@ -59,7 +59,7 @@ void setupLocator() async{
 
 
     locator.registerLazySingleton<TaskRemoteDataSource>(() => TaskRemoteDataSourceImpl(
-
+      locator()
   ));
 
 

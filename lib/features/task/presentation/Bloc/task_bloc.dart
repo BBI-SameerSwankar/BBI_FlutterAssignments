@@ -29,22 +29,34 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<AddTaskEvent>(_onAddTask);
     on<EditTaskEvent>(_onEditTask);
     on<DeleteTaskEvent>(_onDeleteTask);
-    on<FilterTasksEvent>(_onFilterTasks);  // New event handler for filtering
+    on<FilterTasksEvent>(_onFilterTasks); 
+    on<ClearAllTasks>(_clearAllTasks); 
+ // New event handler for filtering
   }
 
   // Sort tasks by due date
  List<TaskModel> _sortTasksByDueDate(List<TaskModel> tasks, {bool ascending = true}) {
-    tasks.sort((a, b) {
-      final comparison = a.dueDate.compareTo(b.dueDate);
-      return ascending ? comparison : -comparison; // Ascending or descending
-    });
-    
-    return tasks;
-  }
+  tasks.sort((a, b) {
+    // First compare by dueDate
+    final dueDateComparison = a.dueDate.compareTo(b.dueDate);
+
+    if (dueDateComparison != 0) {
+      // If due dates are different, return the result based on dueDate comparison
+      return ascending ? dueDateComparison : -dueDateComparison;
+    } else {
+      // If due dates are the same, compare by title alphabetically
+      final titleComparison = a.title.compareTo(b.title);
+      return ascending ? titleComparison : -titleComparison;
+    }
+  });
+
+  return tasks;
+}
 
 
   // Handle fetching tasks
   Future<void> _onFetchTasks(FetchTasksEvent event, Emitter<TaskState> emit) async {
+
     emit(TaskLoading());
     final res = await fetchTasks.call(event.id);
     res.fold(
@@ -90,6 +102,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   // Handle deleting a task
   Future<void> _onDeleteTask(DeleteTaskEvent event, Emitter<TaskState> emit) async {
+    print("deleting....");
+    print(event.userId);
+    print(event.task.id);
     final res = await deleteTask.call(event.userId, event.task);
     res.fold(
       (l) => emit(TaskError(message: l.message)),
@@ -106,5 +121,11 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     _ascending = event.ascending;
     _sortedTasks = _sortTasksByDueDate(_sortedTasks, ascending: event.ascending);
     emit(TaskLoadedState(tasks: _sortedTasks));
+  }
+
+  void _clearAllTasks(ClearAllTasks event, Emitter<TaskState> emit)
+  {
+    _sortedTasks.clear();
+    // emit(TaskLoadedState(tasks: []));
   }
 }

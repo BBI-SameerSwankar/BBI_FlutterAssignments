@@ -6,9 +6,10 @@ import 'package:task_app/features/task/domain/entity/task_model.dart';
 
 class EditTaskScreen extends StatefulWidget {
   final TaskModel task;
-  final userId;
+  final String userId;
 
-  const EditTaskScreen({Key? key, required this.userId,required this.task}) : super(key: key);
+  const EditTaskScreen({Key? key, required this.userId, required this.task})
+      : super(key: key);
 
   @override
   _EditTaskScreenState createState() => _EditTaskScreenState();
@@ -20,11 +21,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   late DateTime _dueDate;
   late Priority _priority;
 
+  // Form key for validation
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task.title);
-    _descriptionController = TextEditingController(text: widget.task.description);
+    _descriptionController =
+        TextEditingController(text: widget.task.description);
     _dueDate = widget.task.dueDate;
     _priority = widget.task.priority;
   }
@@ -38,75 +43,85 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            // Title TextField
-            _buildTextField(
-              controller: _titleController,
-              labelText: 'Title',
-              hintText: 'Enter task title',
-            ),
-            const SizedBox(height: 16),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              // Title TextField with validation
+              _buildTextField(
+                controller: _titleController,
+                labelText: 'Title',
+                hintText: 'Enter task title',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a title';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
 
-            // Description TextField
-            _buildTextField(
-              controller: _descriptionController,
-              labelText: 'Description',
-              hintText: 'Enter task description',
-              maxLines: 4,
-            ),
-            const SizedBox(height: 16),
+              // Description TextField
+              _buildTextField(
+                controller: _descriptionController,
+                labelText: 'Description',
+                hintText: 'Enter task description',
+                maxLines: 4,
+              ),
+              const SizedBox(height: 16),
 
-            // Due Date Picker
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Due Date: ${_dueDate.toLocal()}'.split(' ')[0],
-                    style: const TextStyle(fontSize: 16),
+              // Due Date Picker
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Due Date: ${_dueDate.toLocal().toString().split(' ')[0]}', // This line formats the date properly
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today,
+                        color: Colors.blueAccent),
+                    onPressed: _pickDate,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Priority Dropdown
+              _buildPriorityDropdown(),
+              const SizedBox(height: 32),
+
+              // Save Button with form validation
+              ElevatedButton(
+                onPressed: _editTask,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.calendar_today, color: Colors.blueAccent),
-                  onPressed: _pickDate,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Priority Dropdown
-            _buildPriorityDropdown(),
-            const SizedBox(height: 32),
-
-            // Save Button
-            ElevatedButton(
-              onPressed: _editTask,
-              style: ElevatedButton.styleFrom(
-                // primary: Colors.blueAccent,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                child: const Text(
+                  'Save Changes',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
-              child: const Text(
-                'Save Changes',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Helper method to build text fields
+  // Helper method to build text fields with validation
   Widget _buildTextField({
     required TextEditingController controller,
     required String labelText,
     required String hintText,
     int maxLines = 1,
+    String? Function(String?)? validator,
   }) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       maxLines: maxLines,
       decoration: InputDecoration(
@@ -121,6 +136,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
         ),
       ),
+      validator: validator,
     );
   }
 
@@ -171,17 +187,21 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     }
   }
 
-  // Method to handle editing task
+  // Method to handle editing task with form validation
   void _editTask() {
-    final updatedTask = widget.task.copyWith(
-      title: _titleController.text,
-      description: _descriptionController.text,
-      dueDate: _dueDate,
-      priority: _priority,
-    );
+    if (_formKey.currentState?.validate() ?? false) {
+      final updatedTask = widget.task.copyWith(
+        id: widget.task.id,
+        title: _titleController.text,
+        description: _descriptionController.text,
+        dueDate: _dueDate,
+        priority: _priority,
+      );
 
-    BlocProvider.of<TaskBloc>(context).add(EditTaskEvent(userId: widget.userId, task: updatedTask));
-    Navigator.pop(context); // Close the screen
+      BlocProvider.of<TaskBloc>(context)
+          .add(EditTaskEvent(userId: widget.userId, task: updatedTask));
+      Navigator.pop(context); // Close the screen
+    }
   }
 }
 

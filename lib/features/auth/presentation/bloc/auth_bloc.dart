@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/core/error/failure.dart';
+import 'package:task_app/core/utils/shared_preference_helper.dart';
 import 'package:task_app/features/auth/domain/entity/user_model.dart';
 import 'package:task_app/features/auth/domain/usecases/create_user_usecase.dart';
 import 'package:task_app/features/auth/domain/usecases/get_user_id_usecase.dart';
@@ -34,7 +35,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await loginUserUsecase.call( user  );
 
     result.fold(
-      (failure) => emit(AuthError(message: failure.toString())),
+      (failure) => emit(AuthError(message: failure.message.toString())),
       (result) => emit(UserLoggedIn( userId:  result.userId)),
     );
   }
@@ -71,6 +72,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     print("logout");
     emit(AuthLoading());
  
+
     final result = await logoutUserUsecase.call();
     print(result);
 

@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const AuthStateWrapper(),
           '/auth': (context) => const AuthenticationPage(),
-          '/register': (context) => const RegisterUser(),
+          // '/register': (context) => const RegisterUser(),
         },
         // Use onGenerateRoute to pass the userId explicitly to TaskScreen, AddTaskScreen, and EditTaskScreen
         onGenerateRoute: (settings) {
@@ -98,9 +98,12 @@ class AuthStateWrapper extends StatelessWidget {
         } else if (state is UserRegister) {
           return const RegisterUser();
         } else if (state is AuthError) {
-          return Scaffold(
-            body: Center(child: Text("Error: ${state.message}")),
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${state.message}')),
           );
+        });
+        return const AuthenticationPage();
         }
         return Container();
       },

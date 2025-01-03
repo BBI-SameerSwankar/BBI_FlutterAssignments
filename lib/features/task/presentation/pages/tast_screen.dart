@@ -6,9 +6,8 @@ import 'package:task_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:task_app/features/task/domain/entity/task_model.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_bloc.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_event.dart';
-import 'package:task_app/features/task/presentation/Bloc/task_state.dart'; // Import SharedPreferences helper
-import 'add_task_screen.dart'; // Import the AddTaskScreen
-import 'edit_task_screen.dart'; // Import the EditTaskScreen
+import 'package:task_app/features/task/presentation/Bloc/task_state.dart';
+import 'package:task_app/features/task/presentation/widgets/task_list_item.dart'; // Import SharedPreferences helper
 
 class TaskScreen extends StatefulWidget {
   final String userId;
@@ -21,11 +20,13 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
   bool _isAscending = true;
-  String _selectedPriority = 'all'; // Store selected priority value here
+  String _selectedPriority = 'all';
+  bool isEmptyTaskList = true;
 
   @override
   void initState() {
     super.initState();
+    BlocProvider.of<TaskBloc>(context).add(ClearAllTasks());
     _loadPreferences(); // Load preferences when screen is initialized
     // Fetch tasks on screen load
     BlocProvider.of<TaskBloc>(context).add(FetchTasksEvent(id: widget.userId));
@@ -102,13 +103,12 @@ class _TaskScreenState extends State<TaskScreen> {
                   value: value,
                   child: Row(
                     children: [
-                      // Display the circular colored box next to the dropdown value
                       Container(
                         width: 20,
                         height: 20,
                         decoration: BoxDecoration(
                           color: _getPriorityDropdownColor(value),
-                          shape: BoxShape.circle, // Make it circular
+                          shape: BoxShape.circle, 
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -118,10 +118,11 @@ class _TaskScreenState extends State<TaskScreen> {
                 );
               }).toList(),
               onChanged: (String? newValue) {
+                isEmptyTaskList = true;
                 setState(() {
                   _selectedPriority = newValue!;
                 });
-                // Save the selected priority to shared preferences
+        
                 SharedPreferencesHelper.setSelectedPriority(_selectedPriority);
               },
             ),
@@ -150,30 +151,46 @@ class _TaskScreenState extends State<TaskScreen> {
             }
 
             return ListView.builder(
-              itemCount: tasks.length,
+              itemCount: tasks.length + 1,
               itemBuilder: (context, index) {
+                if (index == tasks.length) {
+                  if (isEmptyTaskList) {
+                    return Container(
+                       height: MediaQuery.of(context).size.height*0.8,
+                      alignment: Alignment.center,
+                      child:   Text("No tasks added yet", style: TextStyle(fontSize: 18)),
+     
+                      
+                      
+                      );
+                  }
+                  return Container();
+                }
                 final task = tasks[index];
 
-                if (_selectedPriority == "all") {
-                  return TaskListItem(task: task, userId: widget.userId);
-                } else if (_selectedPriority == task.priority.name) {
+                if (_selectedPriority == "all" ||
+                    (_selectedPriority == task.priority.name)) {
+                  isEmptyTaskList = false;
                   return TaskListItem(task: task, userId: widget.userId);
                 }
                 return Container();
               },
             );
           } else {
-            return Center(child: Text("No tasks available"));
+            return const Center(child: Text("No tasks available"));
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to Add Task Screen using named route
-          Navigator.pushNamed(context, '/addTask', arguments: widget.userId);
+          Navigator.pushNamed(context, '/addTask', arguments: widget.userId)
+              .then((_) {
+            BlocProvider.of<TaskBloc>(context)
+                .add(FetchTasksEvent(id: widget.userId));
+          });
         },
         backgroundColor: Colors.blueAccent,
-        child: Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -195,6 +212,7 @@ class _TaskScreenState extends State<TaskScreen> {
             TextButton(
               onPressed: () {
                 // Implement the logout logic here
+                BlocProvider.of<TaskBloc>(context).add(ClearAllTasks());
                 BlocProvider.of<AuthBloc>(context).add(LogoutUserEvent());
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -203,122 +221,6 @@ class _TaskScreenState extends State<TaskScreen> {
           ],
         );
       },
-    );
-  }
-}
-
-class TaskListItem extends StatefulWidget {
-  final TaskModel task;
-  final String userId;
-
-  const TaskListItem({Key? key, required this.task, required this.userId})
-      : super(key: key);
-
-  @override
-  _TaskListItemState createState() => _TaskListItemState();
-}
-
-class _TaskListItemState extends State<TaskListItem>
-    with TickerProviderStateMixin {
-  bool _isExpanded = false;
-
-  // Function to get color based on priority
-  Color _getPriorityColor(Priority priority) {
-    switch (priority) {
-      case Priority.low:
-        return const Color.fromARGB(
-            255, 192, 225, 193); // Green for low priority
-      case Priority.medium:
-        return const Color.fromRGBO(
-            250, 230, 200, 1); // Orange for medium priority
-      case Priority.high:
-        return const Color.fromARGB(
-            255, 255, 196, 192); // Red for high priority
-      default:
-        return Colors.grey; // Default color if unknown
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final task = widget.task;
-    final priorityColor =
-        _getPriorityColor(task.priority); // Get color based on task's priority
-
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0), // Smooth card edges
-      ),
-      elevation: 0, // No shadow to avoid blurred edges
-      color: priorityColor, // Use solid color for the background
-      child: Column(
-        children: [
-          ListTile(
-            title: Text(
-              task.title,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            subtitle:
-                Text('Due: ${task.dueDate}', style: TextStyle(fontSize: 14)),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit, color: Colors.lightBlue),
-                  onPressed: () {
-                    // Navigate to Edit Task Screen using named route
-                    Navigator.pushNamed(
-                      context,
-                      '/editTask',
-                      arguments: {'userId': widget.userId, 'task': task},
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete,
-                      color: Colors.red), // White color for the delete icon
-                  onPressed: () {
-                    BlocProvider.of<TaskBloc>(context).add(
-                        DeleteTaskEvent(userId: widget.userId, task: task));
-                  },
-                ),
-              ],
-            ),
-            onTap: () {
-              setState(() {
-                _isExpanded = !_isExpanded;
-              });
-            },
-          ),
-          // Animated size for expanding/collapsing content
-          AnimatedSize(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-            child: _isExpanded
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          title: Text('Description: ${task.description}',
-                              style: TextStyle(fontSize: 14)),
-                        ),
-                        ListTile(
-                          title: Text('Priority: ${task.priority.name}',
-                              style: TextStyle(fontSize: 14)),
-                        ),
-                        ListTile(
-                          title: Text('Due Date: ${task.dueDate}',
-                              style: TextStyle(fontSize: 14)),
-                        ),
-                      ],
-                    ),
-                  )
-                : const SizedBox.shrink(), // When collapsed, show nothing
-          ),
-        ],
-      ),
     );
   }
 }

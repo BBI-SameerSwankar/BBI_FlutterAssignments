@@ -11,7 +11,13 @@ abstract class TaskRemoteDataSource {
 }
 
 class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
-  final DatabaseReference _taskRef = FirebaseDatabase.instance.ref('tasks');
+  // final DatabaseReference _taskRef = FirebaseDatabase.instance.ref('tasks');
+
+    final FirebaseDatabase _firebaseDatabase;
+// Inject AuthLocalDataSource
+
+  TaskRemoteDataSourceImpl(this._firebaseDatabase);
+  DatabaseReference get _taskRef => _firebaseDatabase.ref('tasks');
 
   @override
   Future<void> addTask(String userId, TaskModel task) async {
@@ -37,7 +43,7 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
 
   @override
   Future<void> editTask(String userId, TaskModel task) async {
-      final DatabaseReference newRef = FirebaseDatabase.instance.ref('tasks');
+      // final DatabaseReference newRef = FirebaseDatabase.instance.ref('tasks');
 
       print("editingy.........");
       print(userId);
@@ -45,7 +51,7 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
       print(task.title);
     try {
  
-      final taskRef = newRef.child(userId).child(task.id);
+      final taskRef = _taskRef.child(userId).child(task.id);
       // await taskRef.update(task.toJson());
           await taskRef.update({
       'title': task.title,
@@ -74,10 +80,7 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
         List<TaskModel> tasks = tasksMap.entries.map((entry) {
           return TaskModel.fromJson(entry.value, entry.key);
         }).toList();
-
-        print("in remote....");
-        
-        print(tasks[0].id);
+ 
 
         return tasks;
       } else {

@@ -168,7 +168,7 @@ void main() {
         ),
       );
 
-      // Tap the logout button
+  
       await tester.tap(find.byIcon(Icons.logout));
       await tester.pumpAndSettle();
 

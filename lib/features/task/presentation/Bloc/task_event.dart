@@ -41,3 +41,7 @@ class FilterTasksEvent extends TaskEvent {
 
   FilterTasksEvent({required this.ascending});
 }
+
+class ClearAllTasks extends TaskEvent {
+  
+}

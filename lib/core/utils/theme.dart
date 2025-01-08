@@ -9,7 +9,7 @@ class AppTheme {
   // Text Styles
   static const TextStyle appBarTextStyle = TextStyle(
     color: secondaryColor,
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: FontWeight.bold,
   );
 
@@ -52,21 +52,21 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       scaffoldBackgroundColor: backgroundColor,
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: primaryColor,
         iconTheme: iconTheme,
         titleTextStyle: appBarTextStyle,
       ),
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         bodyLarge: bodyTextStyle, // Updated to bodyLarge
         bodyMedium: bodyTextStyle, // Updated to bodyMedium
         bodySmall: bodyTextStyle, // Updated to bodySmall
       ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryColor,
         foregroundColor: secondaryColor,
       ),
-      buttonTheme: ButtonThemeData(
+      buttonTheme: const ButtonThemeData(
         buttonColor: primaryColor,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

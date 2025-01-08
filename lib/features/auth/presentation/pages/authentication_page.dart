@@ -12,7 +12,7 @@ class AuthenticationPage extends StatefulWidget {
 }
 
 class _AuthenticationPageState extends State<AuthenticationPage> {
-  final TextEditingController _userIdController = TextEditingController();
+ 
 
   // Form key to validate fields
   final _formKey = GlobalKey<FormState>();

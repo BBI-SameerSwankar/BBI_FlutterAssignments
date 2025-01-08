@@ -41,7 +41,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 labelText: 'Title',
                 hintText: 'Enter task title',
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                 if (value == null || value.trim().isEmpty) {
                     return 'Please enter a title';
                   }
                   return null;

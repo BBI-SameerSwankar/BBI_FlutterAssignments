@@ -21,7 +21,7 @@ class TaskPriorityDropdown extends StatelessWidget {
         value: selectedPriority,
         dropdownColor: Colors.blueAccent,
         iconEnabledColor: Colors.white,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
         underline: SizedBox(),
         items: ['all', 'low', 'medium', 'high'].map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(

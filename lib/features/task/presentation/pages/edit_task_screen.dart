@@ -53,7 +53,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 labelText: 'Title',
                 hintText: 'Enter task title',
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  
+                  if (value == null || value.trim().isEmpty) {
                     return 'Please enter a title';
                   }
                   return null;
@@ -188,7 +189,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     }
   }
 
+  String? _validateNoSpaces(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Please enter a value without spaces';
+    }
+    return null;
+  }
+
   void _editTask() {
+    
     if (_formKey.currentState?.validate() ?? false) {
       final updatedTask = widget.task.copyWith(
         id: widget.task.id,

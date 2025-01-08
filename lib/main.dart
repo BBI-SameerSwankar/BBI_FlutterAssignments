@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
           '/auth': (context) => const AuthenticationPage(),
           // '/register': (context) => const RegisterUser(),
         },
-        // Use onGenerateRoute to pass the userId explicitly to TaskScreen, AddTaskScreen, and EditTaskScreen
+      
         onGenerateRoute: (settings) {
           if (settings.name == '/tasks') {
             // Ensure the userId is passed through arguments

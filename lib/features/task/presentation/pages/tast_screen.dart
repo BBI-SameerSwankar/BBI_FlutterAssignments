@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_app/core/utils/constant.dart';
+import 'package:task_app/core/utils/constant.dart'; // Import the constants
 import 'package:task_app/core/utils/shared_preference_helper.dart';
 import 'package:task_app/core/utils/theme.dart';
-import 'package:task_app/features/task/domain/entity/task_model.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_bloc.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_event.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_state.dart';
-import 'package:task_app/features/task/presentation/widgets/task_list_item.dart';
 import 'package:task_app/features/task/presentation/widgets/logout_dialog.dart';
-
+import 'package:task_app/features/task/presentation/widgets/task_list_item.dart';
 
 class TaskScreen extends StatefulWidget {
   final String userId;
@@ -22,19 +21,19 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
   bool _isAscending = true;
-  String _selectedPriority = 'all';
+  String _selectedPriority = TaskScreenConstants.priorityAll;
   bool isEmptyTaskList = true;
 
   @override
   void initState() {
     super.initState();
     isEmptyTaskList = true;
+       
     BlocProvider.of<TaskBloc>(context).add(ClearAllTasks());
     _loadPreferences();
     BlocProvider.of<TaskBloc>(context).add(FetchTasksEvent(id: widget.userId));
   }
 
-  // Load the preferences for sorting and priority filter
   void _loadPreferences() async {
     final isAscending = await SharedPreferencesHelper.getIsAscending();
     final selectedPriority = await SharedPreferencesHelper.getSelectedPriority();
@@ -44,21 +43,17 @@ class _TaskScreenState extends State<TaskScreen> {
     });
   }
 
-  void onDelete(TaskModel task) {
-    BlocProvider.of<TaskBloc>(context).add(DeleteTaskEvent(userId: widget.userId, task: task));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Tasks for ${widget.userId}", style: AppTheme.appBarTextStyle),
-        backgroundColor: AppTheme.primaryColor, // Use the primary color from the theme
+        backgroundColor: AppTheme.primaryColor,
         actions: [
           IconButton(
             icon: Icon(
               _isAscending ? Icons.arrow_upward : Icons.arrow_downward,
-              color: AppTheme.secondaryColor, // Use the secondary color from the theme
+              color: AppTheme.secondaryColor,
             ),
             onPressed: () {
               setState(() {
@@ -72,11 +67,12 @@ class _TaskScreenState extends State<TaskScreen> {
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: DropdownButton<String>(
               value: _selectedPriority,
-              dropdownColor: AppTheme.primaryColor, // Use primary color for the dropdown
-              iconEnabledColor: AppTheme.secondaryColor, // Use the secondary color for icon
-              style: TextStyle(color: AppTheme.secondaryColor), // Use the secondary color for text
+              dropdownColor: AppTheme.primaryColor,
+              iconEnabledColor: AppTheme.secondaryColor,
+              style: TextStyle(color: AppTheme.secondaryColor),
               underline: SizedBox(),
-              items: ['all', 'low', 'medium', 'high'].map<DropdownMenuItem<String>>((String value) {
+              items: [TaskScreenConstants.priorityAll, TaskScreenConstants.priorityLow, TaskScreenConstants.priorityMedium, TaskScreenConstants.priorityHigh]
+                  .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Row(
@@ -104,7 +100,6 @@ class _TaskScreenState extends State<TaskScreen> {
               },
             ),
           ),
-          // Logout button - Use the LogoutDialog widget for logout functionality
           IconButton(
             icon: const Icon(Icons.logout, color: AppTheme.secondaryColor),
             onPressed: () => _showLogoutDialog(context),
@@ -114,14 +109,14 @@ class _TaskScreenState extends State<TaskScreen> {
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is TaskLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (state is TaskError) {
             return Center(child: Text(state.message));
           } else if (state is TaskLoadedState) {
             final tasks = state.tasks;
 
             if (tasks.isEmpty) {
-              return const Center(child: Text("No tasks added yet", style: TextStyle(fontSize: 18)));
+              return const Center(child: Text(TaskScreenConstants.noTasksAddedMessage, style: TextStyle(fontSize: 18)));
             }
 
             return ListView.builder(
@@ -132,20 +127,19 @@ class _TaskScreenState extends State<TaskScreen> {
                     return Container(
                       height: MediaQuery.of(context).size.height * 0.8,
                       alignment: Alignment.center,
-                      child: const Text("No tasks added yet", style: TextStyle(fontSize: 18)),
+                      child: const Text(TaskScreenConstants.noTasksAddedMessage, style: TextStyle(fontSize: 18)),
                     );
                   }
                   return Container();
                 }
                 final task = tasks[index];
 
-                if (_selectedPriority == "all" || (_selectedPriority == task.priority.name)) {
+                if (_selectedPriority == TaskScreenConstants.priorityAll || (_selectedPriority == task.priority.name)) {
                   isEmptyTaskList = false;
                   return TaskListItem(
                     task: task,
                     userId: widget.userId,
                     onEdit: () {
-                      // Navigate to Edit Task Screen using named route
                       Navigator.pushNamed(
                         context,
                         '/editTask',
@@ -153,9 +147,10 @@ class _TaskScreenState extends State<TaskScreen> {
                       ).then((_) {
                         isEmptyTaskList = true;
                         BlocProvider.of<TaskBloc>(context).add(FetchTasksEvent(id: widget.userId));
-                      });
+                      }); 
                     },
                     onDelete: () {
+                      isEmptyTaskList = true;
                       BlocProvider.of<TaskBloc>(context).add(DeleteTaskEvent(userId: widget.userId, task: task));
                     },
                   );
@@ -164,7 +159,7 @@ class _TaskScreenState extends State<TaskScreen> {
               },
             );
           } else {
-            return const Center(child: Text("No tasks available"));
+            return const Center(child: Text(TaskScreenConstants.noTasksAvailableMessage));
           }
         },
       ),

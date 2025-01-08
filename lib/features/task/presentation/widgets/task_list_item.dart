@@ -46,15 +46,15 @@ class _TaskListItemState extends State<TaskListItem>
   Widget build(BuildContext context) {
     final task = widget.task;
     final priorityColor =
-        TaskScreenConstants.getPriorityColor(task.priority); // Get color based on task's priority
+        TaskScreenConstants.getPriorityColor(task.priority); 
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0), // Smooth card edges
+        borderRadius: BorderRadius.circular(12.0), 
       ),
-      elevation: 0, // No shadow to avoid blurred edges
-      color: priorityColor, // Use solid color for the background
+      elevation: 0, 
+      color: priorityColor, 
       child: Column(
         children: [
           ListTile(
@@ -73,7 +73,7 @@ class _TaskListItemState extends State<TaskListItem>
                 ),
                 IconButton(
                   icon: Icon(Icons.delete,
-                      color: Colors.red), // White color for the delete icon
+                      color: Colors.red), 
                   onPressed: delete
                   
                 ),
@@ -103,14 +103,11 @@ class _TaskListItemState extends State<TaskListItem>
                           title: Text('Priority: ${task.priority.name}',
                               style: TextStyle(fontSize: 14)),
                         ),
-                        // ListTile(
-                        //   title: Text('Due Date: ${task.dueDate}',
-                        //       style: TextStyle(fontSize: 14)),
-                        // ),
+                       
                       ],
                     ),
                   )
-                : const SizedBox.shrink(), // When collapsed, show nothing
+                : const SizedBox.shrink(), 
           ),
         ],
       ),

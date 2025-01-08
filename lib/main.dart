@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_app/core/utils/theme.dart';
 import 'package:task_app/features/auth/presentation/bloc/auth.state.dart';
 import 'package:task_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:task_app/features/auth/presentation/bloc/auth_event.dart';
@@ -13,6 +14,7 @@ import 'package:task_app/features/task/presentation/pages/add_task_screen.dart';
 import 'package:task_app/features/task/presentation/pages/edit_task_screen.dart';
 import 'package:task_app/firebase_options.dart';
 import 'package:task_app/service_locator.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
         initialRoute: '/',
         routes: {

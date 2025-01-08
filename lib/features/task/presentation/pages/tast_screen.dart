@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_app/core/utils/shared_preference_helper.dart';
-import 'package:task_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:task_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:task_app/core/utils/constant.dart';
+import 'package:task_app/core/utils/shared_preference_helper.dart';  
 import 'package:task_app/features/task/domain/entity/task_model.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_bloc.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_event.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_state.dart';
-import 'package:task_app/features/task/presentation/widgets/task_list_item.dart'; // Import SharedPreferences helper
+import 'package:task_app/features/task/presentation/widgets/task_list_item.dart'; 
+import 'package:task_app/features/task/presentation/widgets/logout_dialog.dart'; 
 
 class TaskScreen extends StatefulWidget {
   final String userId;
@@ -26,18 +26,16 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
-     isEmptyTaskList = true;
+    isEmptyTaskList = true;
     BlocProvider.of<TaskBloc>(context).add(ClearAllTasks());
-    _loadPreferences(); // Load preferences when screen is initialized
-    // Fetch tasks on screen load
+    _loadPreferences(); 
     BlocProvider.of<TaskBloc>(context).add(FetchTasksEvent(id: widget.userId));
   }
 
   // Load the preferences for sorting and priority filter
   void _loadPreferences() async {
     final isAscending = await SharedPreferencesHelper.getIsAscending();
-    final selectedPriority =
-        await SharedPreferencesHelper.getSelectedPriority();
+    final selectedPriority = await SharedPreferencesHelper.getSelectedPriority();
     print("loading preferences...");
     print(selectedPriority);
     setState(() {
@@ -46,21 +44,12 @@ class _TaskScreenState extends State<TaskScreen> {
     });
   }
 
-  // Function to get color based on priority
-  Color _getPriorityDropdownColor(String priority) {
-    switch (priority) {
-      case 'low':
-        return const Color.fromARGB(
-            255, 192, 225, 193); // Green for low priority
-      case 'medium':
-        return const Color.fromRGBO(
-            250, 230, 200, 1); // Orange for medium priority
-      case 'high':
-        return const Color.fromARGB(
-            255, 255, 196, 192); // Red for high priority
-      default:
-        return Colors.grey; // Default color if unknown
-    }
+
+
+  void onDelete(TaskModel task)
+  {
+     BlocProvider.of<TaskBloc>(context).add(DeleteTaskEvent(userId: widget.userId, task: task));
+                   
   }
 
   @override
@@ -78,13 +67,13 @@ class _TaskScreenState extends State<TaskScreen> {
               setState(() {
                 _isAscending = !_isAscending;
               });
-              // Save the sorting preference
+           
               SharedPreferencesHelper.setIsAscending(_isAscending);
               BlocProvider.of<TaskBloc>(context)
                   .add(FilterTasksEvent(ascending: _isAscending));
             },
           ),
-          // Dropdown for Priority Filter
+      
           Padding(
             padding:
                 const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -108,7 +97,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         width: 20,
                         height: 20,
                         decoration: BoxDecoration(
-                          color: _getPriorityDropdownColor(value),
+                          color: TaskScreenConstants.getPriorityDropdownColor(value),
                           shape: BoxShape.circle, 
                         ),
                       ),
@@ -128,7 +117,8 @@ class _TaskScreenState extends State<TaskScreen> {
               },
             ),
           ),
-          // Logout button
+          
+          // Logout button - Use the LogoutDialog widget for logout functionality
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () => _showLogoutDialog(context),
@@ -146,8 +136,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
             if (tasks.isEmpty) {
               return const Center(
-                child:
-                    Text("No tasks added yet", style: TextStyle(fontSize: 18)),
+                child: Text("No tasks added yet", style: TextStyle(fontSize: 18)),
               );
             }
 
@@ -157,13 +146,10 @@ class _TaskScreenState extends State<TaskScreen> {
                 if (index == tasks.length) {
                   if (isEmptyTaskList) {
                     return Container(
-                       height: MediaQuery.of(context).size.height*0.8,
+                      height: MediaQuery.of(context).size.height * 0.8,
                       alignment: Alignment.center,
-                      child:   Text("No tasks added yet", style: TextStyle(fontSize: 18)),
-     
-                      
-                      
-                      );
+                      child: const Text("No tasks added yet", style: TextStyle(fontSize: 18)),
+                    );
                   }
                   return Container();
                 }
@@ -172,7 +158,21 @@ class _TaskScreenState extends State<TaskScreen> {
                 if (_selectedPriority == "all" ||
                     (_selectedPriority == task.priority.name)) {
                   isEmptyTaskList = false;
-                  return TaskListItem(task: task, userId: widget.userId);
+                  return TaskListItem(task: task, userId: widget.userId,onEdit: () {
+                    // Navigate to Edit Task Screen using named route
+                    Navigator.pushNamed(
+                      context,
+                      '/editTask',
+                      arguments: {'userId': widget.userId, 'task': task},
+                    ).then(
+                      (_)
+                      {
+                        isEmptyTaskList = true;
+                         BlocProvider.of<TaskBloc>(context).add(FetchTasksEvent(id: widget.userId));
+
+                      }
+                    );
+                  }, onDelete:(){BlocProvider.of<TaskBloc>(context).add(DeleteTaskEvent(userId: widget.userId, task: task));} );
                 }
                 return Container();
               },
@@ -196,31 +196,12 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
+  // Show the Logout Dialog when the logout button is pressed
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Logout"),
-          content: const Text("Are you sure you want to logout?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                // Implement the logout logic here
-                BlocProvider.of<TaskBloc>(context).add(ClearAllTasks());
-                BlocProvider.of<AuthBloc>(context).add(LogoutUserEvent());
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text("Logout"),
-            ),
-          ],
-        );
+        return LogoutDialog(); // Use the LogoutDialog widget
       },
     );
   }

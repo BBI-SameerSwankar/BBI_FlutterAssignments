@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_app/core/utils/constant.dart';
 import 'package:task_app/features/task/domain/entity/task_model.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_bloc.dart';
 import 'package:task_app/features/task/presentation/Bloc/task_event.dart';
@@ -8,8 +9,10 @@ import 'package:task_app/features/task/presentation/Bloc/task_event.dart';
 class TaskListItem extends StatefulWidget {
   final TaskModel task;
   final String userId;
+  final Function onEdit;
+  final Function onDelete;
 
-  const TaskListItem({Key? key, required this.task, required this.userId})
+  const TaskListItem({Key? key, required this.task, required this.userId, required this.onEdit, required this.onDelete})
       : super(key: key);
 
   @override
@@ -18,30 +21,32 @@ class TaskListItem extends StatefulWidget {
 
 class _TaskListItemState extends State<TaskListItem>
     with TickerProviderStateMixin {
-  bool _isExpanded = false;
 
-  // Function to get color based on priority
-  Color _getPriorityColor(Priority priority) {
-    switch (priority) {
-      case Priority.low:
-        return const Color.fromARGB(
-            255, 192, 225, 193); // Green for low priority
-      case Priority.medium:
-        return const Color.fromRGBO(
-            250, 230, 200, 1); // Orange for medium priority
-      case Priority.high:
-        return const Color.fromARGB(
-            255, 255, 196, 192); // Red for high priority
-      default:
-        return Colors.grey; // Default color if unknown
-    }
+
+       @override
+  void initState() {
+    super.initState();
+
   }
 
+
+  bool _isExpanded = false;
+
+
+
+  void edit()
+  {
+    widget.onEdit();
+  }
+  void delete()
+  {
+    widget.onDelete();
+  }
   @override
   Widget build(BuildContext context) {
     final task = widget.task;
     final priorityColor =
-        _getPriorityColor(task.priority); // Get color based on task's priority
+        TaskScreenConstants.getPriorityColor(task.priority); // Get color based on task's priority
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -64,29 +69,12 @@ class _TaskListItemState extends State<TaskListItem>
               children: [
                 IconButton(
                   icon: Icon(Icons.edit, color: Colors.lightBlue),
-                  onPressed: () {
-                    // Navigate to Edit Task Screen using named route
-                    Navigator.pushNamed(
-                      context,
-                      '/editTask',
-                      arguments: {'userId': widget.userId, 'task': task},
-                    ).then(
-                      (_)
-                      {
-                         BlocProvider.of<TaskBloc>(context).add(FetchTasksEvent(id: widget.userId));
-                      }
-                    );
-                  },
+                  onPressed: edit
                 ),
                 IconButton(
                   icon: Icon(Icons.delete,
                       color: Colors.red), // White color for the delete icon
-                  onPressed: () {
-                    BlocProvider.of<TaskBloc>(context).add(
-                    
-                        DeleteTaskEvent(userId: widget.userId, task: task));
-                         setState(() {});
-                  },
+                  onPressed: delete
                   
                 ),
               ],
@@ -108,7 +96,7 @@ class _TaskListItemState extends State<TaskListItem>
                     child: Column(
                       children: [
                         ListTile(
-                          title: Text('Description: ${task.description}',
+                          title: Text('Description: ${task.description=="" ? "-" : task.description}',
                               style: TextStyle(fontSize: 14)),
                         ),
                         ListTile(

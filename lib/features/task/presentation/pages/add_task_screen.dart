@@ -19,14 +19,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   DateTime _dueDate = DateTime.now();
   Priority _priority = Priority.low;
 
-  // Form key for validation
+
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Task"),
+        title: const Text("Add Task Screen"),
         backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
@@ -35,7 +35,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              // Title TextField with validation
+       
               _buildTextField(
                 controller: _titleController,
                 labelText: 'Title',
@@ -49,7 +49,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Description TextField
+           
               _buildTextField(
                 controller: _descriptionController,
                 labelText: 'Description',
@@ -58,12 +58,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Due Date Picker
+             
               Row(
                 children: [
                   Expanded(
                     child: Text(
-                      'Due Date: ${_dueDate.toLocal().toString().split(' ')[0]}', // This line formats the date properly
+                      'Due Date: ${_dueDate.toLocal().toString().split(' ')[0]}', 
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -76,11 +76,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Priority Dropdown
+    
               _buildPriorityDropdown(),
               const SizedBox(height: 32),
 
-              // Add Task Button with form validation
               ElevatedButton(
                 onPressed: _addTask,
                 style: ElevatedButton.styleFrom(
@@ -101,7 +100,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  // Helper method to build text fields with validation
+
   Widget _buildTextField({
     required TextEditingController controller,
     required String labelText,
@@ -128,7 +127,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  // Helper method to build priority dropdown
+
   Widget _buildPriorityDropdown() {
     return InputDecorator(
       decoration: InputDecoration(
@@ -156,18 +155,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             );
           }).toList(),
         ),
-      ),
+      ), 
     );
   }
 
-  // Helper method to pick date
+ 
   void _pickDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _dueDate,
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
-    );
+    );    
 
  
   
@@ -178,7 +177,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     }
   }
 
-  // Method to handle adding task with form validation
+ 
   void _addTask() {
     if (_formKey.currentState?.validate() ?? false) {
       final newTask = TaskModel(
@@ -191,12 +190,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
       BlocProvider.of<TaskBloc>(context)
           .add(AddTaskEvent(userId: widget.userId, task: newTask));
-      Navigator.pop(context); // Close the screen
+      Navigator.pop(context); 
     }
   }
 }
 
-// Extension to capitalize first letter of a string
+ 
 extension StringCasingExtension on String {
   String capitalizeFirstLetter() {
     if (this.isEmpty) {

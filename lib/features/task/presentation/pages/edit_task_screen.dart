@@ -61,7 +61,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Description TextField
+
               _buildTextField(
                 controller: _descriptionController,
                 labelText: 'Description',
@@ -70,12 +70,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Due Date Picker
               Row(
                 children: [
                   Expanded(
                     child: Text(
-                      'Due Date: ${_dueDate.toLocal().toString().split(' ')[0]}', // This line formats the date properly
+                      'Due Date: ${_dueDate.toLocal().toString().split(' ')[0]}',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -113,7 +112,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  // Helper method to build text fields with validation
   Widget _buildTextField({
     required TextEditingController controller,
     required String labelText,
@@ -140,7 +138,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  // Helper method to build priority dropdown
+
   Widget _buildPriorityDropdown() {
     return InputDecorator(
       decoration: InputDecoration(
@@ -172,22 +170,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  // Helper method to pick date
+
   void _pickDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _dueDate,
-      firstDate: DateTime(2000),
+      firstDate:  _dueDate.isBefore(DateTime.now()) ? _dueDate:  DateTime.now(),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _dueDate) {
+
+ 
+  
+    if (picked != null && picked != _dueDate   ) {
       setState(() {
         _dueDate = picked;
       });
     }
   }
 
-  // Method to handle editing task with form validation
   void _editTask() {
     if (_formKey.currentState?.validate() ?? false) {
       final updatedTask = widget.task.copyWith(

@@ -1,0 +1,26 @@
+name: sellphy
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^3.10.0
+  firebase_auth: ^5.4.0
+  fpdart: ^1.1.1
+  shared_preferences: ^2.3.5
+  get_it: ^8.0.3
+  bloc: ^9.0.0
+  flutter_bloc: ^9.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

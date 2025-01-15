@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "110829206631",
+    "project_id": "sellphy",
+    "storage_bucket": "sellphy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110829206631:android:cb659de1a779213290a8c2",
+        "android_client_info": {
+          "package_name": "com.example.sellphy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110829206631-cfcrg8t19hsilt6nf9ul6bnetsup26de.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sellphy",
+            "certificate_hash": "e6918dd7d93f8dc8250ce9c9257a507fe4f23313"
+          }
+        },
+        {
+          "client_id": "110829206631-droubjkgls0j4s0detm03h1ouguvg3af.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3XKSfOz6RjGgMxH721JvExsq-LHZMxts"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110829206631-droubjkgls0j4s0detm03h1ouguvg3af.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "110829206631-nufjsk98edaj38ifp47tevl21ocoqjbk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sellphy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,7 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sellphy/features/auth/domain/usecases/get_user_id_for_local.dart';
 import 'package:sellphy/features/auth/domain/usecases/sign_in_with_email_and_password.dart';
 import 'package:sellphy/features/auth/domain/usecases/sign_in_with_google.dart';
 import 'package:sellphy/features/auth/domain/usecases/sign_out.dart';
@@ -12,17 +14,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignInWithGoogle signInWithGoogleUseCase;
   final SignUpWithEmailAndPassword signUpWithEmailAndPasswordUseCase;
   final SignOutUseCase signOutUseCase;
+  final GetUserIdUsecase getUserIdUsecase;
 
   AuthBloc({
     required this.signInWithEmailAndPasswordUseCase,
     required this.signInWithGoogleUseCase,
     required this.signUpWithEmailAndPasswordUseCase,
     required this.signOutUseCase,
+    required this.getUserIdUsecase,
   }) : super(AuthInitial()) {
     on<SignInWithEmailAndPasswordEvent>(_onSignInWithEmailAndPassword);
     on<SignInWithGoogleEvent>(_onSignInWithGoogle);
     on<SignUpWithEmailAndPasswordEvent>(_onSignUpWithEmailAndPassword);
     on<SignOutEvent>(_onSignOut);
+    on<GetUserIdFromLocal>(_onGetUserIdFromLocal);
    
   }
 
@@ -32,6 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       print("login");
+      emit(AuthLoading());
       final result = await signInWithEmailAndPasswordUseCase(
         event.email,
         event.password,
@@ -107,5 +113,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+
+   Future<void> _onGetUserIdFromLocal(GetUserIdFromLocal event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+
+    final result = await getUserIdUsecase.call();
+    print("hadsfdf");
+  
+          
+    result.fold(
+      (failure) 
+      {
+              print(failure.message);
+              emit(AuthInitial());
+            // emit(AuthError(message: failure.toString()));
+      },
+      (userId) {
+       
+          final user = FirebaseAuth.instance.currentUser;
+          print(user);
+          emit(AuthSignedIn(user: user!));
+       
+      },
+    );
+  }
 
 }

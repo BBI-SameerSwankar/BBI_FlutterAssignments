@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                             // Add toggle visibility logic here
                           },
                         ),
-                      ),
+                      ), 
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
@@ -109,6 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                             final email = _emailController.text;
                             final password = _passwordController.text;
 
+                            
                             // Dispatch the login event
                             BlocProvider.of<AuthBloc>(context).add(
                               SignInWithEmailAndPasswordEvent(
@@ -151,22 +152,13 @@ class _LoginPageState extends State<LoginPage> {
                         IconButton(
                           onPressed: () {
                             // Add Google login logic here
+                            BlocProvider.of<AuthBloc>(context).add(
+                              SignInWithGoogleEvent(
+                            
+                              ),
+                            );
                           },
                           icon: const Icon(Icons.g_mobiledata, size: 40),
-                        ),
-                        const SizedBox(width: 16),
-                        IconButton(
-                          onPressed: () {
-                            // Add Apple login logic here
-                          },
-                          icon: const Icon(Icons.apple, size: 40),
-                        ),
-                        const SizedBox(width: 16),
-                        IconButton(
-                          onPressed: () {
-                            // Add Facebook login logic here
-                          },
-                          icon: const Icon(Icons.facebook, size: 40),
                         ),
                       ],
                     ),
@@ -182,9 +174,6 @@ class _LoginPageState extends State<LoginPage> {
                               MaterialPageRoute(
                                   builder: (context) => RegisterPage()),
                             );
-                            // BlocProvider.of<AuthBloc>(context).add(
-                            //   SignUp()
-                            // );
                           },
                           child: const Text(
                             'Sign Up',

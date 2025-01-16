@@ -131,7 +131,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             final password = _passwordController.text;
 
                             // First, navigate to the home page (or '/')
-                            Navigator.pushReplacementNamed(context, '/');
 
                             // Then dispatch the SignUp event
                             BlocProvider.of<AuthBloc>(context).add(
@@ -140,6 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 password: password,
                               ),
                             );
+                            Navigator.pushReplacementNamed(context, '/');
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -175,23 +175,17 @@ class _RegisterPageState extends State<RegisterPage> {
                         IconButton(
                           onPressed: () {
                             // Add Google login logic here
+
+                             BlocProvider.of<AuthBloc>(context).add(
+                              SignInWithGoogleEvent(
+                             
+                              ),
+                            );
+                               Navigator.pushReplacementNamed(context, '/');
                           },
                           icon: const Icon(Icons.g_mobiledata, size: 40),
                         ),
-                        const SizedBox(width: 16),
-                        IconButton(
-                          onPressed: () {
-                            // Add Apple login logic here
-                          },
-                          icon: const Icon(Icons.apple, size: 40),
-                        ),
-                        const SizedBox(width: 16),
-                        IconButton(
-                          onPressed: () {
-                            // Add Facebook login logic here
-                          },
-                          icon: const Icon(Icons.facebook, size: 40),
-                        ),
+                       
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -201,7 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         const Text('I Already Have an Account'),
                         TextButton(
                           onPressed: () {
-                            // Navigate to Login Page
+                   
                             Navigator.pop(context);
                           },
                           child: const Text(

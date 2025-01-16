@@ -63,5 +63,19 @@
         <string>google</string>
         <string>com.google</string>
     </array>
+
+
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+		<string>arm64</string>
+	</array>
+    <!-- Photo Library Access -->
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library to select a profile picture.</string>
+
+    <!-- Camera Access -->
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera for taking profile pictures.</string>
 </dict>
 </plist>

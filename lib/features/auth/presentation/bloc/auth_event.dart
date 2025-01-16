@@ -18,3 +18,5 @@ class SignUpWithEmailAndPasswordEvent extends AuthEvent {
 }
 
 class SignOutEvent extends AuthEvent {}
+
+class GetUserIdFromLocal extends AuthEvent {}

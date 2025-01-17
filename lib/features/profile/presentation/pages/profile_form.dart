@@ -6,9 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart'; // Import Bloc package
 import 'package:sellphy/features/profile/domain/entities/profile.dart';
 
 import 'package:sellphy/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:sellphy/features/profile/presentation/bloc/profile_event.dart'; // Import ProfileEvent
+import 'package:sellphy/features/profile/presentation/bloc/profile_event.dart';
+import 'package:sellphy/features/profile/presentation/bloc/profile_state.dart'; // Import ProfileEvent
 
 class ProfileForm extends StatefulWidget {
+
+
+
   @override
   _ProfileFormState createState() => _ProfileFormState();
 }
@@ -23,6 +27,7 @@ class _ProfileFormState extends State<ProfileForm> {
   final ImagePicker _picker = ImagePicker();
   final user = FirebaseAuth.instance.currentUser;
 
+
   @override
   void dispose() {
     _fullNameController.dispose();
@@ -30,6 +35,8 @@ class _ProfileFormState extends State<ProfileForm> {
     _phoneNumberController.dispose();
     super.dispose();
   }
+
+
 
   Future<void> _pickImage() async {
     final pickedSource = await showDialog<ImageSource>(
@@ -68,6 +75,18 @@ class _ProfileFormState extends State<ProfileForm> {
 
   @override
   Widget build(BuildContext context) {
+      final profileState = BlocProvider.of<ProfileBloc>(context).state;
+
+
+
+    if (profileState is ProfileSuccessState) {
+    _fullNameController.text = profileState.profileModel.username ?? '';
+    _addressController.text = profileState.profileModel.address ?? '';
+    _phoneNumberController.text = profileState.profileModel.phoneNumber ?? '';
+  }
+
+
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -75,10 +94,31 @@ class _ProfileFormState extends State<ProfileForm> {
         actions: [
           TextButton(
             onPressed: () {
+
+
+
+                  if (profileState is ProfileSuccessState) {
+                    BlocProvider.of<ProfileBloc>(context).add(
+                      SaveProfileEvent(profileModel: ProfileModel(
+                        imageUrl:  profileState.profileModel.imageUrl ?? '',
+                         username: profileState.profileModel.username ?? user!.email!.split('@')[0],
+                          phoneNumber: profileState.profileModel.phoneNumber ?? '',
+                           address: profileState.profileModel.address ?? ''),
+                         userId: user!.uid)
+                    );
+                  }
+                  else{
+
+                      BlocProvider.of<ProfileBloc>(context).add(
+                        SaveProfileEvent(profileModel: ProfileModel( imageUrl: "", username: user!.email!.split('@')[0], phoneNumber: "", address: "") ,userId: user!.uid    ), // Passing empty strings
+                      );
+                  }
+
+
+
+
+
               // Trigger SaveProfileEvent with empty strings when Skip is clicked
-              BlocProvider.of<ProfileBloc>(context).add(
-                SaveProfileEvent(profileModel: ProfileModel( imageUrl: "", username: "", phoneNumber: "", address: "") ,userId: user!.uid    ), // Passing empty strings
-              );
               // Navigator.of(context).pop();
             },
             style: TextButton.styleFrom(
@@ -192,6 +232,7 @@ class _ProfileFormState extends State<ProfileForm> {
                             final fullName = _fullNameController.text;
                             final address = _addressController.text;
                             final phoneNumber = _phoneNumberController.text;
+
 
                             // Trigger SaveProfileEvent with form data
                             BlocProvider.of<ProfileBloc>(context).add(

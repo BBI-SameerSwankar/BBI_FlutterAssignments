@@ -55,11 +55,11 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an email';
-                        }
-                        return null;
-                      },
+                      if (value == null || value.isEmpty || !RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -130,16 +130,14 @@ class _RegisterPageState extends State<RegisterPage> {
                             final email = _emailController.text;
                             final password = _passwordController.text;
 
-                            // First, navigate to the home page (or '/')
-
                             // Then dispatch the SignUp event
+                            Navigator.pop(context);
                             BlocProvider.of<AuthBloc>(context).add(
                               SignUpWithEmailAndPasswordEvent(
                                 email: email,
                                 password: password,
                               ),
                             );
-                            Navigator.pushReplacementNamed(context, '/');
                           }
                         },
                         style: ElevatedButton.styleFrom(

@@ -33,7 +33,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final result = await saveProfileUseCase.call(event.profileModel, event.userId);
     result.fold(
       (failure) => emit(ProfileErrorState(failure.message)),
-      (_) => emit(ProfileSuccessState(event.profileModel)),
+      (_) =>  emit(ProfileStatusCompleteState()),
     );
   }
 
@@ -48,10 +48,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Future<void> _onGetProfile(GetProfileEvent event, Emitter<ProfileState> emit) async {
     emit(ProfileLoadingState());
-    final result = await getProfileUsecase.call(event.userId);
+      final firebaseAuth = FirebaseAuth.instance;
+    final userId = firebaseAuth.currentUser!.uid;
+    final result = await getProfileUsecase.call(userId);
     result.fold(
       (failure) => emit(ProfileErrorState(failure.message)),
-      (profileModel) => emit(ProfileSuccessState(profileModel)),
+      (profileModel){
+        if(profileModel.isComplete)
+        {
+            emit(ProfileStatusCompleteState());
+        }
+        else{
+         emit(ProfileSuccessState(profileModel)); 
+
+        }
+         
+         },
     );
   }
 

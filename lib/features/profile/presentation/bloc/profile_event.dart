@@ -17,9 +17,7 @@ class UpdateProfileEvent extends ProfileEvent {
 }
 
 class GetProfileEvent extends ProfileEvent {
-  final String userId;
 
-  GetProfileEvent({required this.userId});
 }
 
 class CheckProfileStatusEvent extends ProfileEvent {

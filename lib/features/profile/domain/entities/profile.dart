@@ -30,7 +30,7 @@ class ProfileModel {
   }
 
     bool get isComplete {
-    return imageUrl.isNotEmpty &&
+    return 
         username.isNotEmpty &&
         phoneNumber.isNotEmpty &&
         address.isNotEmpty;

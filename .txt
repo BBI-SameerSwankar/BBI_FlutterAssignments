@@ -1,0 +1,33 @@
+Auth Wrapper:
+if ProfileLoading
+if profileIncomplete:
+    ProfileForm(model)
+if profileSetupComplete:
+    BottomNav(model)
+        ProfileForm(isEdit = true)
+        
+BLoc: 
+1.onGetProfile
+    -fetch details
+    - if no profile found
+        profileIncomplete with empty model
+    - if details Incomplete  
+        profileIncomplete
+    - if profileComplete
+        profileSetupComplete
+
+2. onSaveProfile
+    - save the details  
+        return profileSetupComplete
+
+    Frontend-------------------------
+    - if click on {save}
+        save with input fields model
+    - if cliked on {skip}
+        fill the fields with already fetched details and use them to save.
+        Note: if username empty then trim the email
+    ---------------------------------
+    
+3. onUpdateProfile
+    emit profileUpdated
+    (emitted state will be added in listener which will only display snackbar)

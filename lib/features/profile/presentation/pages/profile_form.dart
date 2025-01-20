@@ -1,17 +1,17 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // Import Bloc package
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sellphy/core/utils/constants.dart';
 import 'package:sellphy/features/profile/domain/entities/profile.dart';
-
 import 'package:sellphy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:sellphy/features/profile/presentation/bloc/profile_event.dart';
-import 'package:sellphy/features/profile/presentation/bloc/profile_state.dart'; // Import ProfileEvent
+import 'package:sellphy/main.dart';
 
 class ProfileForm extends StatefulWidget {
-
-
+  final bool isEdit;
+  ProfileForm({this.isEdit = false});
 
   @override
   _ProfileFormState createState() => _ProfileFormState();
@@ -22,11 +22,9 @@ class _ProfileFormState extends State<ProfileForm> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
-  XFile? _profileImage;
+  String? _profileImageUrl;
 
-  final ImagePicker _picker = ImagePicker();
   final user = FirebaseAuth.instance.currentUser;
-
 
   @override
   void dispose() {
@@ -36,107 +34,116 @@ class _ProfileFormState extends State<ProfileForm> {
     super.dispose();
   }
 
-
+  Future<void> _initializeFields() async {
+    final profileBloc = BlocProvider.of<ProfileBloc>(context);
+    final profileModel = await profileBloc.onGetProfileForProfilePage();
+    setState(() {
+      _fullNameController.text = profileModel.username.isEmpty
+          ? user!.email!.split('@')[0]
+          : profileModel.username;
+      _addressController.text = profileModel.address ?? '';
+      _phoneNumberController.text = profileModel.phoneNumber ?? '';
+      _profileImageUrl = profileModel.imageUrl;
+    });
+  }
 
   Future<void> _pickImage() async {
-    final pickedSource = await showDialog<ImageSource>(
+    final selectedUrl = await _selectImageFromUrls();
+    if (selectedUrl != null) {
+      setState(() {
+        _profileImageUrl = selectedUrl;
+      });
+    }
+  }
+
+  Future<String?> _selectImageFromUrls() async {
+    return await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Choose Image Source'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(ImageSource.camera);
+          title: const Text('Select an Image'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+              ),
+              itemCount: ProfileConstants.imgUrls.length,
+              itemBuilder: (BuildContext context, int index) {
+                final url = ProfileConstants.imgUrls[index];
+                return GestureDetector(
+                  onTap: () => Navigator.pop(context, url),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.network(
+                      url,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                );
               },
-              child: const Text('Camera'),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(ImageSource.gallery);
-              },
-              child: const Text('Gallery'),
-            ),
-          ],
+          ),
         );
       },
     );
+  }
 
-    if (pickedSource != null) {
-      final pickedFile = await _picker.pickImage(source: pickedSource);
-
-      if (pickedFile != null) {
-        setState(() {
-          _profileImage = pickedFile;
-        });
-      }
-    }
+  @override
+  void initState() {
+    super.initState();
+    _initializeFields();
   }
 
   @override
   Widget build(BuildContext context) {
-      final profileState = BlocProvider.of<ProfileBloc>(context).state;
-
-
-
-    if (profileState is ProfileSuccessState) {
-    _fullNameController.text = profileState.profileModel.username ?? '';
-    _addressController.text = profileState.profileModel.address ?? '';
-    _phoneNumberController.text = profileState.profileModel.phoneNumber ?? '';
-  }
-
-
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         actions: [
-          TextButton(
-            onPressed: () {
+          widget.isEdit
+              ? Container()
+              : TextButton(
+                  onPressed: () async {
+                    final profileBloc = BlocProvider.of<ProfileBloc>(context);
+                    final fetchedProfile =
+                        await profileBloc.onGetProfileForProfilePage();
 
-
-
-                  if (profileState is ProfileSuccessState) {
-                    BlocProvider.of<ProfileBloc>(context).add(
-                      SaveProfileEvent(profileModel: ProfileModel(
-                        imageUrl:  profileState.profileModel.imageUrl ?? '',
-                         username: profileState.profileModel.username ?? user!.email!.split('@')[0],
-                          phoneNumber: profileState.profileModel.phoneNumber ?? '',
-                           address: profileState.profileModel.address ?? ''),
-                         userId: user!.uid)
+                    profileBloc.add(
+                      SaveProfileEvent(
+                        profileModel: ProfileModel(
+                          imageUrl: _profileImageUrl ?? "",
+                          username: fetchedProfile.username.isEmpty
+                              ? user!.email!.split('@')[0]
+                              : fetchedProfile.username,
+                          phoneNumber: fetchedProfile.phoneNumber,
+                          address: fetchedProfile.address,
+                        ),
+                        userId: user!.uid,
+                      ),
                     );
-                  }
-                  else{
-
-                      BlocProvider.of<ProfileBloc>(context).add(
-                        SaveProfileEvent(profileModel: ProfileModel( imageUrl: "", username: user!.email!.split('@')[0], phoneNumber: "", address: "") ,userId: user!.uid    ), // Passing empty strings
-                      );
-                  }
-
-
-
-
-
-              // Trigger SaveProfileEvent with empty strings when Skip is clicked
-              // Navigator.of(context).pop();
-            },
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            child: const Row(
-              children: [
-                Text(
-                  'Skip ',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 20,
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                  ),
+                  child: const Row(
+                    children: [
+                      Text(
+                        'Skip ',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 20,
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_rounded, color: Colors.red)
+                    ],
                   ),
                 ),
-                Icon(Icons.arrow_forward_rounded, color: Colors.red,)
-              ],
-            ),
-          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -177,10 +184,10 @@ class _ProfileFormState extends State<ProfileForm> {
                       child: CircleAvatar(
                         radius: 80,
                         backgroundColor: Colors.grey[200],
-                        backgroundImage: _profileImage != null
-                            ? FileImage(File(_profileImage!.path))
+                        backgroundImage: _profileImageUrl != null
+                            ? NetworkImage(_profileImageUrl!)
                             : null,
-                        child: _profileImage == null
+                        child: _profileImageUrl == null
                             ? const Icon(
                                 Icons.camera_alt,
                                 color: Colors.grey,
@@ -229,19 +236,82 @@ class _ProfileFormState extends State<ProfileForm> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
-                            final fullName = _fullNameController.text;
-                            final address = _addressController.text;
-                            final phoneNumber = _phoneNumberController.text;
+
+                            if(widget.isEdit)
+                            {
+                              BlocProvider.of<ProfileBloc>(context).add(UpdateProfileEvent(
+                                      profileModel: ProfileModel(
+                                        address: _addressController.text,
+                                        imageUrl: _profileImageUrl ?? '',
+                                        phoneNumber:
+                                            _phoneNumberController.text,
+                                        username: _fullNameController.text
+                                            .isEmpty
+                                            ? user!.email!.split('@')[0]
+                                            : _fullNameController.text,
+                                      ),
+                                      userId: user!.uid,
+                                    ));
+                                       Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (context) => AuthWrapper(
+                                      initialTabIndex: 3), // Profile tab.
+                                ),
+                                (route) => false,
+                              );
+                              
+                            }
+                            else{
+                              BlocProvider.of<ProfileBloc>(context).add(SaveProfileEvent(
+                                      profileModel: ProfileModel(
+                                        address: _addressController.text,
+                                        imageUrl: _profileImageUrl ?? '',
+                                        phoneNumber:
+                                            _phoneNumberController.text,
+                                        username: _fullNameController.text
+                                            .isEmpty
+                                            ? user!.email!.split('@')[0]
+                                            : _fullNameController.text,
+                                      ),
+                                      userId: user!.uid,
+                                    ),);
 
 
-                            // Trigger SaveProfileEvent with form data
-                            BlocProvider.of<ProfileBloc>(context).add(
-                              SaveProfileEvent(
-                                
-                                profileModel: ProfileModel(address: address, imageUrl: "", phoneNumber: phoneNumber, username: fullName),
-                                userId: user!.uid, // Pass empty string or a valid user ID if needed
-                              ),
-                            );
+                         
+
+                            }
+
+
+
+                            // BlocProvider.of<ProfileBloc>(context).add(
+                            //   widget.isEdit
+                            //       ? UpdateProfileEvent(
+                            //           profileModel: ProfileModel(
+                            //             address: _addressController.text,
+                            //             imageUrl: _profileImageUrl ?? '',
+                            //             phoneNumber:
+                            //                 _phoneNumberController.text,
+                            //             username: _fullNameController.text
+                            //                 .isEmpty
+                            //                 ? user!.email!.split('@')[0]
+                            //                 : _fullNameController.text,
+                            //           ),
+                            //           userId: user!.uid,
+                            //         )
+                            //       : SaveProfileEvent(
+                            //           profileModel: ProfileModel(
+                            //             address: _addressController.text,
+                            //             imageUrl: _profileImageUrl ?? '',
+                            //             phoneNumber:
+                            //                 _phoneNumberController.text,
+                            //             username: _fullNameController.text
+                            //                 .isEmpty
+                            //                 ? user!.email!.split('@')[0]
+                            //                 : _fullNameController.text,
+                            //           ),
+                            //           userId: user!.uid,
+                            //         ),
+                            // );
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -251,9 +321,9 @@ class _ProfileFormState extends State<ProfileForm> {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
-                        child: const Text(
-                          'Save Profile',
-                          style: TextStyle(
+                        child: Text(
+                          widget.isEdit ? 'Update Profile' : 'Save Profile',
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,

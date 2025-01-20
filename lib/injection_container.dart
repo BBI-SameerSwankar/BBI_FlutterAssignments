@@ -109,7 +109,7 @@ void setupLocator() async{
       saveProfileUseCase: locator(),
       updateprofileUsecase: locator(),
       getProfileUsecase: locator(),
-      checkProfileStatusUsecase: locator(),
+     
     ),
   );
 

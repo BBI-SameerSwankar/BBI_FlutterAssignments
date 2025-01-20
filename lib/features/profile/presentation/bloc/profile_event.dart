@@ -20,6 +20,5 @@ class GetProfileEvent extends ProfileEvent {
 
 }
 
-class CheckProfileStatusEvent extends ProfileEvent {
 
-}
+class ClearProfileEvent extends ProfileEvent{}

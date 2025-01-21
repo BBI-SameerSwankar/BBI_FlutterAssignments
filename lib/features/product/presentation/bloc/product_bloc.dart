@@ -15,6 +15,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   Future<void> _onGetProducts(GetProductEvent event, Emitter<ProductState> emit)
   async {
     emit(ProductLoading());
+    print("branch changed");
     final response = await getProductsUsecase.call();
     response.fold(
       (failure){
@@ -25,5 +26,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         emit(ProductLoaded(products));
       });
 
+
+
+
+    
   }
 }

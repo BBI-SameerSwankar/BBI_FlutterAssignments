@@ -1,13 +1,12 @@
-import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sellphy/core/utils/constants.dart';
 import 'package:sellphy/features/profile/domain/entities/profile.dart';
 import 'package:sellphy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:sellphy/features/profile/presentation/bloc/profile_event.dart';
-import 'package:sellphy/main.dart';
 
 class ProfileForm extends StatefulWidget {
   final bool isEdit;
@@ -97,8 +96,7 @@ class _ProfileFormState extends State<ProfileForm> {
     super.initState();
     _initializeFields();
   }
-
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -175,7 +173,7 @@ class _ProfileFormState extends State<ProfileForm> {
                 ),
               ),
               const SizedBox(height: 40),
-              Form(
+Form(
                 key: _formKey,
                 child: Column(
                   children: [
@@ -231,86 +229,50 @@ class _ProfileFormState extends State<ProfileForm> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    SizedBox(
+SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState?.validate() ?? false) {
-
-                            if(widget.isEdit)
-                            {
-                              BlocProvider.of<ProfileBloc>(context).add(UpdateProfileEvent(
-                                      profileModel: ProfileModel(
-                                        address: _addressController.text,
-                                        imageUrl: _profileImageUrl ?? '',
-                                        phoneNumber:
-                                            _phoneNumberController.text,
-                                        username: _fullNameController.text
-                                            .isEmpty
-                                            ? user!.email!.split('@')[0]
-                                            : _fullNameController.text,
-                                      ),
-                                      userId: user!.uid,
-                                    ));
-                                       Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                  builder: (context) => AuthWrapper(
-                                      initialTabIndex: 3), // Profile tab.
-                                ),
-                                (route) => false,
-                              );
-                              
-                            }
-                            else{
-                              BlocProvider.of<ProfileBloc>(context).add(SaveProfileEvent(
-                                      profileModel: ProfileModel(
-                                        address: _addressController.text,
-                                        imageUrl: _profileImageUrl ?? '',
-                                        phoneNumber:
-                                            _phoneNumberController.text,
-                                        username: _fullNameController.text
-                                            .isEmpty
-                                            ? user!.email!.split('@')[0]
-                                            : _fullNameController.text,
-                                      ),
-                                      userId: user!.uid,
-                                    ),);
-
+                          if (widget.isEdit) {
+                            // Save edited details
+                            BlocProvider.of<ProfileBloc>(context)
+                                .add(SaveProfileEvent(
+                              profileModel: ProfileModel(
+                                address: _addressController.text,
+                                imageUrl: _profileImageUrl ?? '',
+                                phoneNumber: _phoneNumberController.text,
+                                username: _fullNameController.text.isEmpty
+                                    ? user!.email!.split('@')[0]
+                                    : _fullNameController.text,
+                              ),
+                              userId: user!.uid,
+                              isEdit: true
+                            ));
+                            Navigator.pop(context);
 
                          
-
+                          } else {
+                            // Save or Skip logic for new users
+                            if (_formKey.currentState!.validate()) {
+                              BlocProvider.of<ProfileBloc>(context)
+                                  .add(SaveProfileEvent(
+                                profileModel: ProfileModel(
+                                  address: _addressController.text,
+                                  imageUrl: _profileImageUrl ?? '',
+                                  phoneNumber: _phoneNumberController.text,
+                                  username: _fullNameController.text.isEmpty
+                                      ? user!.email!.split('@')[0]
+                                      : _fullNameController.text,
+                                ),
+                                userId: user!.uid,
+                               isEdit: false
+                              ));
                             }
-
-
-
-                            // BlocProvider.of<ProfileBloc>(context).add(
-                            //   widget.isEdit
-                            //       ? UpdateProfileEvent(
-                            //           profileModel: ProfileModel(
-                            //             address: _addressController.text,
-                            //             imageUrl: _profileImageUrl ?? '',
-                            //             phoneNumber:
-                            //                 _phoneNumberController.text,
-                            //             username: _fullNameController.text
-                            //                 .isEmpty
-                            //                 ? user!.email!.split('@')[0]
-                            //                 : _fullNameController.text,
-                            //           ),
-                            //           userId: user!.uid,
-                            //         )
-                            //       : SaveProfileEvent(
-                            //           profileModel: ProfileModel(
-                            //             address: _addressController.text,
-                            //             imageUrl: _profileImageUrl ?? '',
-                            //             phoneNumber:
-                            //                 _phoneNumberController.text,
-                            //             username: _fullNameController.text
-                            //                 .isEmpty
-                            //                 ? user!.email!.split('@')[0]
-                            //                 : _fullNameController.text,
-                            //           ),
-                            //           userId: user!.uid,
-                            //         ),
+                            // Navigator.of(context).pushAndRemoveUntil(
+                            //   MaterialPageRoute(
+                            //       builder: (context) =>
+                            //           AuthWrapper(initialTabIndex: 0)),
+                            //   (route) => false,
                             // );
                           }
                         },
@@ -318,17 +280,10 @@ class _ProfileFormState extends State<ProfileForm> {
                           backgroundColor: Colors.red,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
+                              borderRadius: BorderRadius.circular(8.0)),
                         ),
                         child: Text(
-                          widget.isEdit ? 'Update Profile' : 'Save Profile',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
+                            widget.isEdit ? 'Update Profile' : 'Save Profile'),
                       ),
                     ),
                     const SizedBox(height: 24),

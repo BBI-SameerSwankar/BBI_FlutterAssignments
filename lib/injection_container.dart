@@ -5,12 +5,18 @@ import 'package:sellphy/features/auth/data/datasources/auth_local_data_source.da
 import 'package:sellphy/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:sellphy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:sellphy/features/auth/domain/repositories/auth_repository.dart';
+import 'package:sellphy/features/auth/domain/usecases/forget_password.dart';
 import 'package:sellphy/features/auth/domain/usecases/get_user_id_for_local.dart';
 import 'package:sellphy/features/auth/domain/usecases/sign_in_with_email_and_password.dart';
 import 'package:sellphy/features/auth/domain/usecases/sign_in_with_google.dart';
 import 'package:sellphy/features/auth/domain/usecases/sign_out.dart';
 import 'package:sellphy/features/auth/domain/usecases/sign_up_with_email_and_password.dart';
 import 'package:sellphy/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sellphy/features/product/data/data_sources/remote_data_source.dart';
+import 'package:sellphy/features/product/data/repositories/respository_impl.dart';
+import 'package:sellphy/features/product/domain/repository/repository.dart';
+import 'package:sellphy/features/product/domain/usecases/get_products_usecase.dart';
+import 'package:sellphy/features/product/presentation/bloc/product_bloc.dart';
 import 'package:sellphy/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:sellphy/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:sellphy/features/profile/domain/repositories/profile_repository.dart';
@@ -20,6 +26,7 @@ import 'package:sellphy/features/profile/domain/usecases/save_profile_details.da
 import 'package:sellphy/features/profile/domain/usecases/update_profile_details.dart';
 import 'package:sellphy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 final GetIt locator = GetIt.instance;
 
@@ -52,6 +59,7 @@ void setupLocator() async{
   locator.registerLazySingleton<SignOutUseCase>(() => SignOutUseCase(locator<AuthRepository>()));                  
   locator.registerLazySingleton<SignUpWithEmailAndPassword>(() => SignUpWithEmailAndPassword(locator<AuthRepository>()));
   locator.registerLazySingleton<GetUserIdUsecase>(() => GetUserIdUsecase(locator<AuthRepository>( )));
+  locator.registerLazySingleton<ForgotPasswordUsecase>(() => ForgotPasswordUsecase(locator<AuthRepository>( )));
 
   // locator.registerLazySingleton<GetUserIdUsecase>(() => GetUserIdUsecase(locator<AuthRepository>()));
 
@@ -63,7 +71,8 @@ void setupLocator() async{
       signOutUseCase: locator(),
       signInWithGoogleUseCase: locator(),
       signUpWithEmailAndPasswordUseCase: locator(),
-      getUserIdUsecase: locator()
+      getUserIdUsecase: locator(),
+      forgotPasswordUsecase: locator()
      
   ));
 
@@ -114,6 +123,22 @@ void setupLocator() async{
   );
 
 
+
+  locator.registerLazySingleton(() => http.Client());
+
+  locator.registerLazySingleton<RemoteDataSource>(() => RemoteDataSourceImpl(locator()));
+
+  locator.registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl(locator()));
+  // UseCases
+  locator.registerLazySingleton<GetProductsUsecase>(() => GetProductsUsecase( locator() ));
+
+  locator.registerFactory<ProductBloc>(() => ProductBloc(getProductsUsecase:  locator()));
+  // Repository
+  // locator.registerLazySingleton(() => ProductRepositoryImpl(locator()));
+
+  // Data sources
+
+  // External
      
 
 }

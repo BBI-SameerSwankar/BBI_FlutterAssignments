@@ -10,4 +10,5 @@ abstract class AuthRepository {
   Future<Either<Failure, void>> signOut();
   Future<Either<Failure, User>> signUpWithEmailAndPassword(String email, String password);
   Future<Either<Failure, String>> getUserIdFromLocal();
+  Future<Either<Failure, void>> forgotPassword(String email);
 }

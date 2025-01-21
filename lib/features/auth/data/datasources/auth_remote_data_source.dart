@@ -7,6 +7,8 @@ abstract class AuthRemoteDataSource {
   Future<User?> signUpWithEmailAndPassword(String email, String password);
   Future<User?> signInWithGoogle();
   Future<void> signOut();
+  Future<void> forgotPassword(String email);
+
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -89,6 +91,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return null;
     } catch (e) {
       throw Exception("Failed to sign up with email and password: $e");
+    }
+  }
+
+
+  @override
+  Future<void> forgotPassword(String email) async {
+    try{
+      await firebaseAuth.sendPasswordResetEmail(email: email);
+ 
+    }
+    catch(e){
+
+      print("error in reseting password ${e}");
+
+      throw Exception("Error while reseting password");
     }
   }
 

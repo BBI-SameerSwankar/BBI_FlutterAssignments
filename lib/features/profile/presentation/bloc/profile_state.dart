@@ -1,5 +1,3 @@
-
-
 abstract class ProfileState {}
 
 class ProfileInitialState extends ProfileState {}
@@ -22,8 +20,8 @@ class ProfileStatusIncompleteState extends ProfileState {
 
 class ProfileSetupComplete extends ProfileState{
   final dynamic profileModel;
-
-  ProfileSetupComplete(this.profileModel); 
+  final isEdit;
+  ProfileSetupComplete(this.profileModel,this.isEdit); 
 }
 
 class ProfileUpdateSucess extends ProfileState{}

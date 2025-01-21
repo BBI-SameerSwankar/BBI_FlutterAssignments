@@ -1,6 +1,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sellphy/features/auth/domain/usecases/forget_password.dart';
 import 'package:sellphy/features/auth/domain/usecases/get_user_id_for_local.dart';
 import 'package:sellphy/features/auth/domain/usecases/sign_in_with_email_and_password.dart';
 import 'package:sellphy/features/auth/domain/usecases/sign_in_with_google.dart';
@@ -15,6 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignUpWithEmailAndPassword signUpWithEmailAndPasswordUseCase;
   final SignOutUseCase signOutUseCase;
   final GetUserIdUsecase getUserIdUsecase;
+  final ForgotPasswordUsecase forgotPasswordUsecase;
 
   AuthBloc({
     required this.signInWithEmailAndPasswordUseCase,
@@ -22,12 +24,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.signUpWithEmailAndPasswordUseCase,
     required this.signOutUseCase,
     required this.getUserIdUsecase,
+    required this.forgotPasswordUsecase
   }) : super(AuthInitial()) {
     on<SignInWithEmailAndPasswordEvent>(_onSignInWithEmailAndPassword);
     on<SignInWithGoogleEvent>(_onSignInWithGoogle);
     on<SignUpWithEmailAndPasswordEvent>(_onSignUpWithEmailAndPassword);
     on<SignOutEvent>(_onSignOut);
     on<GetUserIdFromLocal>(_onGetUserIdFromLocal);
+    on<ForgotPasswordEvent>(_forgotPassword);
    
   }
 
@@ -136,6 +140,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
        
       },
     );
+  }
+
+
+  Future<void> _forgotPassword(ForgotPasswordEvent event,Emitter<AuthState> emit) async{
+
+    final result =  await forgotPasswordUsecase.call(event.email);
+
+    result.fold(
+      (failure){
+        print("failed while reseting password");
+      },
+      (userId){ 
+        print("password reset success");
+      },
+    );
+
   }
 
 }

@@ -13,6 +13,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  bool _passwordObscure = true;
+  bool _confirmPasswordObscure = true;
 
   @override
   void dispose() {
@@ -55,16 +57,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       validator: (value) {
-                      if (value == null || value.isEmpty || !RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
+                        if (value == null || value.isEmpty || !RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value)) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: _passwordObscure,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.lock),
                         hintText: 'Password',
@@ -72,9 +74,13 @@ class _RegisterPageState extends State<RegisterPage> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.visibility),
+                          icon: Icon(
+                            _passwordObscure ? Icons.visibility : Icons.visibility_off,
+                          ),
                           onPressed: () {
-                            // Add toggle visibility logic here
+                            setState(() {
+                              _passwordObscure = !_passwordObscure;
+                            });
                           },
                         ),
                       ),
@@ -88,7 +94,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _confirmPasswordController,
-                      obscureText: true,
+                      obscureText: _confirmPasswordObscure,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.lock),
                         hintText: 'Confirm Password',
@@ -96,9 +102,13 @@ class _RegisterPageState extends State<RegisterPage> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.visibility),
+                          icon: Icon(
+                            _confirmPasswordObscure ? Icons.visibility : Icons.visibility_off,
+                          ),
                           onPressed: () {
-                            // Add toggle visibility logic here
+                            setState(() {
+                              _confirmPasswordObscure = !_confirmPasswordObscure;
+                            });
                           },
                         ),
                       ),
@@ -170,20 +180,20 @@ class _RegisterPageState extends State<RegisterPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          onPressed: () {
+                        GestureDetector(
+                          onTap: () {
                             // Add Google login logic here
-
-                             BlocProvider.of<AuthBloc>(context).add(
-                              SignInWithGoogleEvent(
-                             
-                              ),
+                            BlocProvider.of<AuthBloc>(context).add(
+                              SignInWithGoogleEvent(),
                             );
-                               Navigator.pushReplacementNamed(context, '/');
+                            Navigator.pushReplacementNamed(context, '/');
                           },
-                          icon: const Icon(Icons.g_mobiledata, size: 40),
+                          child: Image.asset(
+                            'assets/images/google_logo.png',
+                            height: 40, // Adjust size as needed
+                            width: 40,  // Adjust size as needed
+                          ),
                         ),
-                       
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -193,7 +203,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         const Text('I Already Have an Account'),
                         TextButton(
                           onPressed: () {
-                   
                             Navigator.pop(context);
                           },
                           child: const Text(

@@ -29,6 +29,19 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, void>> forgotPassword(String email) async {
+    try{
+
+      await remoteDataSource.forgotPassword(email);
+      return const Right(null);
+    }
+    catch(e)
+    {
+        return Left(Failure("Error while reseting password"));
+    }
+  }
+
+  @override
   Future<Either<Failure, User>> signInWithGoogle() async {
     try {
       final authModel = await remoteDataSource.signInWithGoogle();

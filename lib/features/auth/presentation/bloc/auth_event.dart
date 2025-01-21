@@ -6,7 +6,7 @@ class SignInWithEmailAndPasswordEvent extends AuthEvent {
 
   SignInWithEmailAndPasswordEvent({required this.email, required this.password});
 }
-
+ 
 
 class SignInWithGoogleEvent extends AuthEvent {}
 
@@ -20,3 +20,7 @@ class SignUpWithEmailAndPasswordEvent extends AuthEvent {
 class SignOutEvent extends AuthEvent {}
 
 class GetUserIdFromLocal extends AuthEvent {}
+class ForgotPasswordEvent extends AuthEvent {
+  final String email;
+  ForgotPasswordEvent({required this.email});
+}

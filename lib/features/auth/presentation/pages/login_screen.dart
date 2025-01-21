@@ -13,12 +13,103 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _showForgotPasswordDialog(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          title: const Text(
+            'Forgot Password',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Enter your email to reset your password.',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final email = emailController.text.trim();
+                if (email.isNotEmpty) {
+                  BlocProvider.of<AuthBloc>(context).add(
+                    ForgotPasswordEvent(email: email),
+                  );
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Password reset link sent!'),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a valid email.'),
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: const Text(
+                'Submit',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -63,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: _obscureText,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.lock),
                         hintText: 'Password',
@@ -71,12 +162,16 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.visibility),
+                          icon: Icon(
+                            _obscureText ? Icons.visibility : Icons.visibility_off,
+                          ),
                           onPressed: () {
-                            // Add toggle visibility logic here
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
                           },
                         ),
-                      ), 
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
@@ -89,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          // Add Forgot Password logic here
+                          _showForgotPasswordDialog(context);
                         },
                         child: const Text(
                           'Forgot Password?',
@@ -109,7 +204,6 @@ class _LoginPageState extends State<LoginPage> {
                             final email = _emailController.text;
                             final password = _passwordController.text;
 
-                            
                             // Dispatch the login event
                             BlocProvider.of<AuthBloc>(context).add(
                               SignInWithEmailAndPasswordEvent(
@@ -149,16 +243,18 @@ class _LoginPageState extends State<LoginPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          onPressed: () {
+                        GestureDetector(
+                          onTap: () {
                             // Add Google login logic here
                             BlocProvider.of<AuthBloc>(context).add(
-                              SignInWithGoogleEvent(
-                            
-                              ),
+                              SignInWithGoogleEvent(),
                             );
                           },
-                          icon: const Icon(Icons.g_mobiledata, size: 40),
+                          child: Image.asset(
+                            'assets/images/google_logo.png',
+                            height: 40, // Adjust size as needed
+                            width: 40,  // Adjust size as needed
+                          ),
                         ),
                       ],
                     ),

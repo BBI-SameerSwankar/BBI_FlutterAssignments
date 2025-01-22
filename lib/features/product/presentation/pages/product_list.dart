@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sellphy/features/product/presentation/bloc/product_bloc.dart';
+import 'package:sellphy/features/product/presentation/product_bloc/product_bloc.dart';
+import 'package:sellphy/features/product/presentation/pages/product_description.dart';
 
 class ProductList extends StatelessWidget {
   const ProductList({super.key});
@@ -11,7 +12,6 @@ class ProductList extends StatelessWidget {
       backgroundColor: Colors.white, // Set the background color to white
       appBar: AppBar(
         backgroundColor: Colors.white,
-        // elevation: 0,
         toolbarHeight: 90,
         title: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -70,11 +70,21 @@ class ProductList extends StatelessWidget {
                 ),
                 itemBuilder: (context, index) {
                   final product = state.products[index];
-                  return ProductCard(
-                    imageUrl: product.image,
-                    title: product.title,
-                    price: '£${product.price.toStringAsFixed(2)}',
-                    bgColor: Colors.white,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductDescriptionPage(product: product),
+                        ),
+                      );
+                    },
+                    child: ProductCard(
+                      imageUrl: product.image,
+                      title: product.title,
+                      price: '£${product.price}',
+                      bgColor: Colors.primaries[index % Colors.primaries.length] .withOpacity(0.1),
+                    ),
                   );
                 },
               ),
@@ -112,67 +122,65 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: bgColor,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16), // Border radius for the image
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: bgColor,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16), // Rounded corners for the image container
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  height: 150, // Ensures consistent image height
+                  height: 180,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Text(
-                      title,
-                      textAlign: TextAlign.center, // Center align the title
-                      maxLines: 1, // Ensures only one line is displayed
-                      overflow: TextOverflow.ellipsis, // Adds "..." if the text is too long
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+            ),
+            const SizedBox(height: 8), // Add spacing between the image and the title/price
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
+                children: [
+                  Text(
+                    title,
+                    textAlign: TextAlign.center, // Center align the title
+                    maxLines: 1, // Ensures only one line is displayed
+                    overflow: TextOverflow.ellipsis, // Adds "..." if the text is too long
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      price,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         Positioned(
           top: 8,
           right: 8,
-          child: CircleAvatar(
-            backgroundColor: Colors.white,
-            radius: 16,
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              icon: const Icon(
-                Icons.favorite_border,
-                color: Colors.grey,
-                size: 18,
-              ),
-              onPressed: () {
-                // Handle like action
-              },
+          child: Container(
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white, // Background color for the heart icon
+            ),
+            padding: const EdgeInsets.all(6), // Adds padding inside the circle
+            child: const Icon(
+              Icons.favorite_border, // Heart icon
+              color: Colors.red, // Heart color
+              size: 20, // Icon size
             ),
           ),
         ),

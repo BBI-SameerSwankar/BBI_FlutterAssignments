@@ -1,8 +1,9 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:sellphy/core/error/failures.dart';
 import 'package:sellphy/features/product/data/data_sources/remote_data_source.dart';
+import 'package:sellphy/features/product/domain/entities/cart.dart';
 import 'package:sellphy/features/product/domain/entities/product.dart';
-import 'package:sellphy/features/product/domain/repository/repository.dart';
+import 'package:sellphy/features/product/domain/repositories/repository.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
   final RemoteDataSource remoteDataSource;
@@ -25,4 +26,26 @@ class ProductRepositoryImpl implements ProductRepository {
       return Left(Failure(e.toString()));
     }
   }
+
+
+   @override
+  Future<void> addItemToCart(String userId, Cart cartItem) {
+
+    return remoteDataSource.addItemToCart(userId, cartItem);
+  }
+
+
+ 
+
+  @override
+  Future<void> removeItemFromCart(String userId, Cart cartItem) {
+    return remoteDataSource.removeItemFromCart(userId, cartItem);
+  }
+
+  @override
+  Future<List<Cart>> getCartItems(String userId) {
+    return remoteDataSource.getCartItems(userId);
+  }
+
+
 }

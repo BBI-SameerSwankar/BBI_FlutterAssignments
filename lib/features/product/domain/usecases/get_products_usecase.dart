@@ -2,7 +2,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:sellphy/core/error/failures.dart';
 import 'package:sellphy/features/product/domain/entities/product.dart';
-import 'package:sellphy/features/product/domain/repository/repository.dart';
+import 'package:sellphy/features/product/domain/repositories/repository.dart';
 
 class GetProductsUsecase {
   final ProductRepository productRepository;

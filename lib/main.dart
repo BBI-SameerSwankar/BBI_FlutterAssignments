@@ -7,7 +7,9 @@ import 'package:sellphy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sellphy/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sellphy/features/auth/presentation/pages/login_screen.dart';
 import 'package:sellphy/features/auth/presentation/pages/signup_screen.dart';
-import 'package:sellphy/features/product/presentation/bloc/product_bloc.dart';
+import 'package:sellphy/features/product/presentation/cart_bloc/cart_bloc.dart';
+import 'package:sellphy/features/product/presentation/cart_bloc/cart_event.dart';
+import 'package:sellphy/features/product/presentation/product_bloc/product_bloc.dart';
 
 import 'package:sellphy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:sellphy/features/profile/presentation/pages/profile_form.dart';
@@ -41,9 +43,12 @@ class MainApp extends StatelessWidget {
 
         BlocProvider(
             create: (_) => locator<ProductBloc>()..add(GetProductEvent())),
+        BlocProvider(
+            create: (_) => locator<CartBloc>()..add(GetProductEventForCart())),
             
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         initialRoute: '/', // Start with the AuthWrapper
         routes: {
           '/': (context) => AuthWrapper(),

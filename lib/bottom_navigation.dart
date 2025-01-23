@@ -19,7 +19,7 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
   final List<Widget> _pages = [
     ProductList(),
     CartPage(),
-    Wishlist(),
+    WishlistPage(),
     ProfileDetailsPage(),
   ];
 
@@ -44,16 +44,16 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
       ),
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24), // Rounded top-left corner
-          topRight: Radius.circular(24), // Rounded top-right corner
+          topLeft: Radius.circular(24), 
+          topRight: Radius.circular(24),
         ),
         child: BottomNavigationBar(
-          backgroundColor: const Color(0xFFEAF4F3), // Set the background color to #eaf4f3
+          backgroundColor: const Color(0xFFEAF4F3),
           type: BottomNavigationBarType.fixed,
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           selectedItemColor: Colors.red,
-          unselectedItemColor: Colors.grey,
+          unselectedItemColor: Colors.blueGrey,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined, size: 30),

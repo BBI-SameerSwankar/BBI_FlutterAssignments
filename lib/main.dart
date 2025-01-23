@@ -7,9 +7,9 @@ import 'package:sellphy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sellphy/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sellphy/features/auth/presentation/pages/login_screen.dart';
 import 'package:sellphy/features/auth/presentation/pages/signup_screen.dart';
-import 'package:sellphy/features/product/presentation/cart_bloc/cart_bloc.dart';
-import 'package:sellphy/features/product/presentation/cart_bloc/cart_event.dart';
-import 'package:sellphy/features/product/presentation/product_bloc/product_bloc.dart';
+import 'package:sellphy/features/product/presentation/bloc/cart_bloc/cart_bloc.dart';
+import 'package:sellphy/features/product/presentation/bloc/cart_bloc/cart_event.dart';
+import 'package:sellphy/features/product/presentation/bloc/product_bloc/product_bloc.dart';
 
 import 'package:sellphy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:sellphy/features/profile/presentation/pages/profile_form.dart';
@@ -20,7 +20,7 @@ import 'package:sellphy/injection_container.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
-  print("setup done");
+  debugPrint("setup done");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MainApp());
 }
@@ -29,27 +29,17 @@ class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {  
+  Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-            create: (_) => locator<AuthBloc>()..add(GetUserIdFromLocal())),
-        BlocProvider(
-            create: (_) {
-              print("getting profile event  ccalled");
-            return locator<ProfileBloc>();
-            } 
-            ),
-
-        BlocProvider(
-            create: (_) => locator<ProductBloc>()..add(GetProductEvent())),
-        BlocProvider(
-            create: (_) => locator<CartBloc>()..add(GetProductEventForCart())),
-            
+        BlocProvider(create: (_) => locator<AuthBloc>()..add(GetUserIdFromLocal())),
+        BlocProvider(create: (_) => locator<ProfileBloc>()),
+        BlocProvider(create: (_) => locator<ProductBloc>()..add(GetProductEvent())),
+        BlocProvider(create: (_) => locator<CartBloc>()..add(GetProductEventForCart())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: '/', // Start with the AuthWrapper
+        initialRoute: '/', 
         routes: {
           '/': (context) => AuthWrapper(),
           '/login': (context) => LoginPage(),
@@ -60,4 +50,3 @@ class MainApp extends StatelessWidget {
     );
   }
 }
-

@@ -8,4 +8,6 @@ abstract class ProductRepository {
   Future<void> addItemToCart(String userId, Cart cartItem);
   Future<void> removeItemFromCart(String userId, Cart cartItem);
   Future<List<Cart>> getCartItems(String userId);
+  Future<Either<Failure,void>> toggleFavorite(String userId,int productId,bool isFavorite);
+  Future<Either<Failure,List<int>>> getFavouriteProductsId(String userId);
 }

@@ -6,8 +6,8 @@ import 'package:sellphy/features/product/domain/usecases/add_item_to_cart.dart';
 import 'package:sellphy/features/product/domain/usecases/get_cart_items.dart';
 import 'package:sellphy/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:sellphy/features/product/domain/usecases/remove_item_from_cart.dart';
-import 'package:sellphy/features/product/presentation/cart_bloc/cart_event.dart';
-import 'package:sellphy/features/product/presentation/cart_bloc/cart_state.dart';
+import 'package:sellphy/features/product/presentation/bloc/cart_bloc/cart_event.dart';
+import 'package:sellphy/features/product/presentation/bloc/cart_bloc/cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
   final GetProductsUsecase getProductsUsecase;
@@ -16,6 +16,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   final RemoveItemFromCart removeItemFromCart;
 
   Map<int, ProductModel> _productMap = {};
+  
   List<Cart> _cartItems = [];
 
   CartBloc({
@@ -30,7 +31,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<GetCartEvent>(_onGetCartItems);
   }
 
-  // Fetch products and store them in a map
+
   Future<void> _onGetProducts(GetProductEventForCart event, Emitter<CartState> emit) async {
 
     final response = await getProductsUsecase.call();
@@ -46,7 +47,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     );
   }
 
-  // Add item to cart
+
   Future<void> _onAddToCart(AddToCartEvent event, Emitter<CartState> emit) async {
     print("is this adding");
     final userId = FirebaseAuth.instance.currentUser!.uid;
@@ -57,7 +58,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         print("added cart item in bloc ${cartItem.quantity}");
         await addItemToCart(userId, cartItem);
 
-        add(GetCartEvent()); // Reload cart after adding item
+        add(GetCartEvent()); 
       } else {
         emit(CartError('Product not found.'));
       }
@@ -66,27 +67,26 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     }
   }
 
-  // Remove item from cart
   Future<void> _onRemoveFromCart(RemoveFromCartEvent event, Emitter<CartState> emit) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     try {
       final cartItem = Cart(productId: event.productId, quantity: event.quantity);
       await removeItemFromCart(userId, cartItem);
 
-      add(GetCartEvent()); // Reload cart after removing item
+      add(GetCartEvent()); 
     } catch (e) {
       emit(CartError('Failed to remove item from cart: $e'));
     }
   }
 
-  // Fetch cart items and populate product details
+
   Future<void> _onGetCartItems(GetCartEvent event, Emitter<CartState> emit) async {
-    emit(CartLoading());
+    // emit(CartLoading());
     final userId = FirebaseAuth.instance.currentUser!.uid;
     try {
       final cartItems = await getCartItems.call(userId);
 
-      // Populate product details in cart items
+     
       final populatedCartItems = cartItems.map((cartItem) {
         final productId = cartItem.productId;
         return cartItem.copyWith(product: _productMap[productId]);

@@ -11,7 +11,7 @@ class Cart {
     this.product
   });
 
-  // Convert Cart entity to JSON
+
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
@@ -19,7 +19,7 @@ class Cart {
     };
   }
 
-  // Create Cart entity from JSON
+
   factory Cart.fromJson(Map<String, dynamic> json) {
     return Cart(
       productId: json['productId'],

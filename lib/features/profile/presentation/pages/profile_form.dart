@@ -238,12 +238,12 @@ SizedBox(
                             BlocProvider.of<ProfileBloc>(context)
                                 .add(SaveProfileEvent(
                               profileModel: ProfileModel(
-                                address: _addressController.text,
+                                address: _addressController.text.trim(),
                                 imageUrl: _profileImageUrl ?? '',
-                                phoneNumber: _phoneNumberController.text,
+                                phoneNumber: _phoneNumberController.text.trim(),
                                 username: _fullNameController.text.isEmpty
                                     ? user!.email!.split('@')[0]
-                                    : _fullNameController.text,
+                                    : _fullNameController.text.trim(),
                               ),
                               userId: user!.uid,
                               isEdit: true
@@ -257,12 +257,12 @@ SizedBox(
                               BlocProvider.of<ProfileBloc>(context)
                                   .add(SaveProfileEvent(
                                 profileModel: ProfileModel(
-                                  address: _addressController.text,
+                                  address: _addressController.text.trim(),
                                   imageUrl: _profileImageUrl ?? '',
                                   phoneNumber: _phoneNumberController.text,
                                   username: _fullNameController.text.isEmpty
                                       ? user!.email!.split('@')[0]
-                                      : _fullNameController.text,
+                                      : _fullNameController.text.trim(),
                                 ),
                                 userId: user!.uid,
                                isEdit: false

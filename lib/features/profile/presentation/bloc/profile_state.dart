@@ -20,7 +20,7 @@ class ProfileStatusIncompleteState extends ProfileState {
 
 class ProfileSetupComplete extends ProfileState{
   final dynamic profileModel;
-  final isEdit;
+  bool isEdit;
   ProfileSetupComplete(this.profileModel,this.isEdit); 
 }
 

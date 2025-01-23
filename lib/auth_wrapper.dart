@@ -14,7 +14,7 @@ import 'package:sellphy/features/profile/presentation/pages/profile_form.dart';
 class AuthWrapper extends StatelessWidget {
   final int initialTabIndex;
 
-  AuthWrapper({this.initialTabIndex = 0}); // Default to Home tab.
+  AuthWrapper({this.initialTabIndex = 0}); 
 
   @override
   Widget build(BuildContext context) {
@@ -47,23 +47,18 @@ class AuthWrapper extends StatelessWidget {
               {                
                 if(profileState.isEdit)
                 {
-                return BottomNavigationPage(initialIndex: 3);
+                  return BottomNavigationPage(initialIndex: 3);
                 }
                 return BottomNavigationPage(initialIndex: 0);
 
-              } 
-            
-
+              }            
               return const Scaffold(
                   body: Center(child: CircularProgressIndicator()));
+                  
             },
           );
         }
-        //  else if (state is AuthError) {
-        //   return Scaffold(
-        //     body: Center(child: Text('Error: ${state.message}')),
-        //   );
-        // } 
+    
         else {
           return LoginPage();
         }

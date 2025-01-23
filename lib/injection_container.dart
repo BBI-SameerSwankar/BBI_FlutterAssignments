@@ -17,10 +17,12 @@ import 'package:sellphy/features/product/data/repositories/respository_impl.dart
 import 'package:sellphy/features/product/domain/repositories/repository.dart';
 import 'package:sellphy/features/product/domain/usecases/add_item_to_cart.dart';
 import 'package:sellphy/features/product/domain/usecases/get_cart_items.dart';
+import 'package:sellphy/features/product/domain/usecases/get_favourite_products_id_usecase.dart';
 import 'package:sellphy/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:sellphy/features/product/domain/usecases/remove_item_from_cart.dart';
-import 'package:sellphy/features/product/presentation/cart_bloc/cart_bloc.dart';
-import 'package:sellphy/features/product/presentation/product_bloc/product_bloc.dart';
+import 'package:sellphy/features/product/domain/usecases/toggle_favourite_usecase.dart';
+import 'package:sellphy/features/product/presentation/bloc/cart_bloc/cart_bloc.dart';
+import 'package:sellphy/features/product/presentation/bloc/product_bloc/product_bloc.dart';
 import 'package:sellphy/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:sellphy/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:sellphy/features/profile/domain/repositories/profile_repository.dart';
@@ -130,7 +132,6 @@ void setupLocator() async{
 
 
   locator.registerLazySingleton(() => http.Client());
-  // locator.registerLazySingleton<FirebaseDatabase>(() => FirebaseDatabase.instance);
 
   locator.registerLazySingleton<RemoteDataSource>(() => RemoteDataSourceImpl(locator(),locator()));
 
@@ -142,10 +143,15 @@ void setupLocator() async{
   locator.registerLazySingleton<GetCartItems>(() => GetCartItems( locator() ));
   locator.registerLazySingleton<RemoveItemFromCart>(() => RemoveItemFromCart( locator() ));
 
+  locator.registerLazySingleton<GetFavouriteProductsIdUsercase>(() => GetFavouriteProductsIdUsercase( locator() ));
+  locator.registerLazySingleton<ToggleFavouriteUsecase>(() => ToggleFavouriteUsecase( locator() ));
+
 
 
   locator.registerFactory<ProductBloc>(() => ProductBloc(
     getProductsUsecase:  locator(),
+    getFavouriteProductsIdUsercase: locator(),
+    toggleFavouriteUsecase: locator()
  
     ));
 
@@ -157,14 +163,6 @@ void setupLocator() async{
     removeItemFromCart: locator()
     ));
 
-  // Repository
-  // locator.registerLazySingleton(() => ProductRepositoryImpl(locator()));
 
-  // Data sources
-
-  // External
-
-  
-     
 
 }

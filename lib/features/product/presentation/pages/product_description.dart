@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sellphy/bottom_navigation.dart';
 import 'package:sellphy/features/product/domain/entities/product.dart';
-import 'package:sellphy/features/product/presentation/cart_bloc/cart_bloc.dart';
-import 'package:sellphy/features/product/presentation/cart_bloc/cart_event.dart';
-import 'package:sellphy/features/product/presentation/product_bloc/product_bloc.dart';
+import 'package:sellphy/features/product/presentation/bloc/cart_bloc/cart_bloc.dart';
+import 'package:sellphy/features/product/presentation/bloc/cart_bloc/cart_event.dart';
+import 'package:sellphy/features/product/presentation/bloc/product_bloc/product_bloc.dart';
 
-class ProductDescriptionPage extends StatelessWidget {
+class ProductDescriptionPage extends StatefulWidget {
   final ProductModel product;
 
   const ProductDescriptionPage({Key? key, required this.product}) : super(key: key);
+
+  @override
+  State<ProductDescriptionPage> createState() => _ProductDescriptionPageState();
+}
+
+class _ProductDescriptionPageState extends State<ProductDescriptionPage> {
+
+  late bool isLiked;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isLiked = widget.product.isFavorite;
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +40,25 @@ class ProductDescriptionPage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite_border, color: Colors.black),
+            icon: Icon(
+              isLiked ? Icons.favorite : Icons.favorite_border,
+              color: isLiked ? Colors.pink : Colors.black, 
+      
+            ),
             onPressed: () {
-              // Add to favorite functionality
+              BlocProvider.of<ProductBloc>(context).add(ToggleFavoriteEvent( widget.product.id));
+              setState(() {
+                  isLiked = !isLiked;
+              });
             },
           ),
           IconButton(
             icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black),
             onPressed: () {
-              // Navigate to cart
+              Navigator.pop(context);
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: 
+              (context)=> BottomNavigationPage(initialIndex: 1)
+              ));
             },
           ),
         ],
@@ -46,7 +73,7 @@ class ProductDescriptionPage extends StatelessWidget {
                   
                   child: Container(
                     child: Image.network(
-                      product.image,
+                      widget.product.image,
                       fit: BoxFit.cover,
                       width: 200,
                       height: 200,
@@ -66,10 +93,10 @@ class ProductDescriptionPage extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start, // Align to the left
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          product.title,
+                          widget.product.title,
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -80,50 +107,50 @@ class ProductDescriptionPage extends StatelessWidget {
                           children: [
                             const Icon(Icons.star, color: Colors.orange, size: 20),
                             Text(
-                              product.rate.toStringAsFixed(1),
+                              widget.product.rate.toStringAsFixed(1),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            Text(
-                              ' (321 reviews)', // Mock data
-                              style: const TextStyle(fontSize: 14, color: Colors.grey),
+                            const Text(
+                              ' (321 reviews)', 
+                              style: TextStyle(fontSize: 14, color: Colors.grey),
                             ),
                           ],
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          product.description,
+                          widget.product.description,
                           style: const TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                         const SizedBox(height: 16),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //   children: [
-                        //     const Text(
-                        //       "Size",
-                        //       style: TextStyle(
-                        //         fontSize: 16,
-                        //         fontWeight: FontWeight.bold,
-                        //       ),
-                        //     ),
-                        //     Row(
-                        //       children: ["XS", "S", "M", "L", "XL"].map((size) {
-                        //         return Padding(
-                        //           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        //           child: ChoiceChip(
-                        //             label: Text(size),
-                        //             selected: size == "M", // Example selection
-                        //             onSelected: (selected) {
-                        //               // Handle size selection
-                        //             },
-                        //           ),
-                        //         );
-                        //       }).toList(),
-                        //     ),
-                        //   ],
-                        // ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Size",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Row(
+                              children: ["XS", "S", "M", "L", "XL"].map((size) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                  child: ChoiceChip(
+                                    label: Text(size),
+                                    selected: size == "M", 
+                                    onSelected: (selected) {
+                                      // Handle size selection
+                                    },
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
                     
                       ],
                     ),
@@ -162,18 +189,18 @@ class ProductDescriptionPage extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            "£${(product.price * 1.43).toStringAsFixed(0)}",
+                            "£${(widget.product.price * 1.43).toStringAsFixed(0)}",
                             style: const TextStyle(
-                              fontSize: 18, // Increased font size
+                              fontSize: 18, 
                               color: Colors.grey,
                               decoration: TextDecoration.lineThrough,
                             ),
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            "£${product.price.toStringAsFixed(2)}",
+                            "£${widget.product.price.toStringAsFixed(2)}",
                             style: const TextStyle(
-                              fontSize: 28, // Increased font size
+                              fontSize: 28, 
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
@@ -187,10 +214,10 @@ class ProductDescriptionPage extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Add to cart functionality
-                          BlocProvider.of<CartBloc>(context).add(AddToCartEvent(productId: product.id, quantity: 1));
+                          
+                          BlocProvider.of<CartBloc>(context).add(AddToCartEvent(productId: widget.product.id, quantity: 1));
 
-                        },
+                        }, 
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           shape: const RoundedRectangleBorder(
@@ -200,7 +227,7 @@ class ProductDescriptionPage extends StatelessWidget {
                           ),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 24,
-                            vertical: 18, // Increased height
+                            vertical: 18, 
                           ),
                           minimumSize: const Size(120, 56), 
                         ),

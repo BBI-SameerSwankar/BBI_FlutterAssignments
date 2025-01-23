@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sellphy/features/product/presentation/bloc/product_bloc/product_bloc.dart';
 import 'package:sellphy/features/profile/domain/entities/profile.dart';
 import 'package:sellphy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:sellphy/features/auth/presentation/bloc/auth_bloc.dart';
@@ -20,6 +21,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
   Widget build(BuildContext context) {
     final profileBloc = BlocProvider.of<ProfileBloc>(context);
     final authBloc = BlocProvider.of<AuthBloc>(context);
+    final productBloc = BlocProvider.of<ProductBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -32,7 +34,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
         // elevation: 1,
       ),
       body: Container(
-        constraints: BoxConstraints
+        constraints: const BoxConstraints
             .expand(), // Ensures the container takes up the full screen
         color: Colors.white, // Background color set to white
         child: FutureBuilder<ProfileModel>(
@@ -170,6 +172,8 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                           onPressed: () {
                             profileBloc.add(ClearProfileEvent());
                             authBloc.add(SignOutEvent());
+                            productBloc.add(ClearProductListEvent());
+                            Navigator.pushNamedAndRemoveUntil(context, '/', (route)=>false);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey.shade300,

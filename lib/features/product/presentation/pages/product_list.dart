@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sellphy/features/product/presentation/bloc/product_bloc/product_bloc.dart';
 import 'package:sellphy/features/product/presentation/pages/product_description.dart';
 import 'package:sellphy/features/product/presentation/widgets/product_cart.dart';
-
 import 'package:sellphy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:sellphy/features/profile/presentation/bloc/profile_state.dart';
 
@@ -13,7 +12,7 @@ class ProductList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         toolbarHeight: 90,
@@ -24,7 +23,7 @@ class ProductList extends StatelessWidget {
               String username = "User";
               String? profileImage;
 
-              if (profileState is ProfileStatusIncompleteState ) {
+              if (profileState is ProfileStatusIncompleteState) {
                 username = profileState.profileModel?.name ?? "User";
                 profileImage = profileState.profileModel?.imageUrl;
               } else if (profileState is ProfileSetupComplete) {
@@ -38,7 +37,7 @@ class ProductList extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       const Text(
+                      const Text(
                         "Hello,",
                         style: TextStyle(
                           fontSize: 16,
@@ -56,29 +55,13 @@ class ProductList extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // CircleAvatar(
-                  //   radius: 24,
-                  //   backgroundColor: Colors.orange,
-                  //   child: profileImage != null
-                  //       ? 
-                  //            Image.network(
-                  //             profileImage,
-                  //             fit: BoxFit.contain,
-                  //           )
-                          
-                  //       : const Icon(
-                  //           Icons.person,
-                  //           color: Colors.white,
-                  //         ),
-                  // ),
-                    CircleAvatar(
-                        radius: 24,
-                        backgroundImage: profileImage != null
-                            ? NetworkImage(profileImage)
-                            : null,
-                        backgroundColor: Colors.red.shade100,
-                      
-                      ),
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundImage: profileImage != null
+                        ? NetworkImage(profileImage)
+                        : null,
+                    backgroundColor: Colors.red.shade100,
+                  ),
                 ],
               );
             },
@@ -106,16 +89,35 @@ class ProductList extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ProductDescriptionPage(product: product),
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  ProductDescriptionPage(product: product),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const curve = Curves.easeInOut;
+                            final tween = Tween(begin: 0.0, end: 1.0).chain(
+                              CurveTween(curve: curve),
+                            );
+                            final scaleAnimation = animation.drive(tween);
+
+                            return ScaleTransition(
+                              scale: scaleAnimation,
+                              child: child,
+                            );
+                          },
                         ),
                       );
                     },
-                    child: ProductCard(
-                      product: product,
-                      bgColor: Colors.primaries[
-                              index % Colors.primaries.length].withOpacity(0.1),
+                    child: Hero(
+                      tag: product.id, // Unique tag
+                      child: ProductCard(
+                        key: ValueKey(product.id),
+                        product: product,
+                        bgColor: Colors
+                            .primaries[index % Colors.primaries.length]
+                            .withOpacity(0.1),
+                      ),
                     ),
                   );
                 },

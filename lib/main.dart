@@ -39,6 +39,13 @@ class MainApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(
+        fontFamily: 'Roboto', // Replace 'Roboto' with your font
+      ),
+    ),
+  ),
         initialRoute: '/', 
         routes: {
           '/': (context) => AuthWrapper(),

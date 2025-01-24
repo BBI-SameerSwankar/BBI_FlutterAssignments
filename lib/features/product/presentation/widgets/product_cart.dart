@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sellphy/features/product/domain/entities/product.dart';
 import 'package:sellphy/features/product/presentation/bloc/product_bloc/product_bloc.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   final ProductModel product;
   final Color bgColor;
 
@@ -14,24 +14,53 @@ class ProductCard extends StatelessWidget {
   });
 
   @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  double _scale = 1.0;
+
+  void _handleLikeButtonPressed() {
+    // Trigger the pop-out animation
+    setState(() {
+      _scale = 1.3;
+    });
+
+    // Return to normal scale after a short delay
+    Future.delayed(const Duration(milliseconds: 150), () {
+      setState(() {
+        _scale = 1.0;
+      });
+    });
+
+    // Notify the Bloc to toggle the favorite state
+    BlocProvider.of<ProductBloc>(context).add(
+      ToggleFavoriteEvent(widget.product.id),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: bgColor,
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  product.image,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: 180,
+            Flexible(
+              // Use Flexible to allow scaling within constraints
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: widget.bgColor,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    widget.product.image,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 180,
+                  ),
                 ),
               ),
             ),
@@ -41,22 +70,22 @@ class ProductCard extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    product.title,
+                    widget.product.title,
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '£${product.price}',
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
+                    '£${widget.product.price.toStringAsFixed(2)}', // Ensure two decimal places
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
                   ),
                 ],
               ),
@@ -67,11 +96,7 @@ class ProductCard extends StatelessWidget {
           top: 8,
           right: 8,
           child: GestureDetector(
-            onTap: () {
-              BlocProvider.of<ProductBloc>(context).add(
-                ToggleFavoriteEvent(product.id),
-              );
-            },
+            onTap: _handleLikeButtonPressed,
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -85,10 +110,16 @@ class ProductCard extends StatelessWidget {
                 ],
               ),
               padding: const EdgeInsets.all(8),
-              child: Icon(
-                product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: product.isFavorite ? Colors.pink : Colors.black,
-                size: 20,
+              child: AnimatedScale(
+                duration: const Duration(milliseconds: 150),
+                scale: _scale,
+                child: Icon(
+                  widget.product.isFavorite
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: widget.product.isFavorite ? Colors.red : Colors.black,
+                  size: 20,
+                ),
               ),
             ),
           ),

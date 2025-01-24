@@ -12,7 +12,7 @@ part 'product_state.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final GetProductsUsecase getProductsUsecase;
-  final GetFavouriteProductsIdUsercase getFavouriteProductsIdUsercase;
+  final GetFavouriteProductsIdUsecase getFavouriteProductsIdUsecase;
   final ToggleFavouriteUsecase toggleFavouriteUsecase;
 
   List<ProductModel> _products = [];
@@ -20,7 +20,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ProductBloc({
     required this.getProductsUsecase,
       required this.toggleFavouriteUsecase,
-      required this.getFavouriteProductsIdUsercase
+      required this.getFavouriteProductsIdUsecase
   }) : super(ProductInitial()) {
     on<GetProductEvent>(_onGetProducts);
     on<ToggleFavoriteEvent>(_toggleFavoriteEvent);
@@ -57,7 +57,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       LoadFavoriteProductsIdEvent event, Emitter<ProductState> emit) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     final favouriteIdsResponse =
-        await getFavouriteProductsIdUsercase.call(userId);
+        await getFavouriteProductsIdUsecase.call(userId);
 
     favouriteIdsResponse.fold((failure) {
       emit(ProductLoaded(_products));

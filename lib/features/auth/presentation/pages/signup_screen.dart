@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sellphy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sellphy/features/auth/presentation/bloc/auth_event.dart';
+import 'package:sellphy/features/auth/presentation/widgets/custom_button.dart';
+import 'package:sellphy/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:sellphy/features/auth/presentation/widgets/google_login_widget.dart';
+
+// Custom Widgets
+
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -47,15 +53,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    TextFormField(
+                    CustomTextField(
                       controller: _emailController,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.person),
-                        hintText: 'Username or Email',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
+                      hintText: 'Email',
+                      icon: Icons.person,
                       validator: (value) {
                         if (value == null || value.isEmpty || !RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value)) {
                           return 'Please enter a valid email';
@@ -64,25 +65,20 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    CustomTextField(
                       controller: _passwordController,
+                      hintText: 'Password',
+                      icon: Icons.lock,
                       obscureText: _passwordObscure,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.lock),
-                        hintText: 'Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _passwordObscure ? Icons.visibility : Icons.visibility_off,
                         ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _passwordObscure ? Icons.visibility : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _passwordObscure = !_passwordObscure;
-                            });
-                          },
-                        ),
+                        onPressed: () {
+                          setState(() {
+                            _passwordObscure = !_passwordObscure;
+                          });
+                        },
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -92,25 +88,20 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    CustomTextField(
                       controller: _confirmPasswordController,
+                      hintText: 'Confirm Password',
+                      icon: Icons.lock,
                       obscureText: _confirmPasswordObscure,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.lock),
-                        hintText: 'Confirm Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _confirmPasswordObscure ? Icons.visibility : Icons.visibility_off,
                         ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _confirmPasswordObscure ? Icons.visibility : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _confirmPasswordObscure = !_confirmPasswordObscure;
-                            });
-                          },
-                        ),
+                        onPressed: () {
+                          setState(() {
+                            _confirmPasswordObscure = !_confirmPasswordObscure;
+                          });
+                        },
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -132,40 +123,22 @@ class _RegisterPageState extends State<RegisterPage> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            final email = _emailController.text;
-                            final password = _passwordController.text;
+                    CustomButton(
+                      text: 'Create Account',
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          final email = _emailController.text;
+                          final password = _passwordController.text;
 
-                            // Then dispatch the SignUp event
-                            Navigator.pop(context);
-                            BlocProvider.of<AuthBloc>(context).add(
-                              SignUpWithEmailAndPasswordEvent(
-                                email: email,
-                                password: password,
-                              ),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: const Text(
-                          'Create Account',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                          Navigator.pop(context);
+                          BlocProvider.of<AuthBloc>(context).add(
+                            SignUpWithEmailAndPasswordEvent(
+                              email: email,
+                              password: password,
+                            ),
+                          );
+                        }
+                      },
                     ),
                     const SizedBox(height: 24),
                     const Center(
@@ -180,19 +153,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        GestureDetector(
+                        GoogleLoginIcon(
                           onTap: () {
-                            // Add Google login logic here
                             BlocProvider.of<AuthBloc>(context).add(
                               SignInWithGoogleEvent(),
                             );
                             Navigator.pushReplacementNamed(context, '/');
                           },
-                          child: Image.asset(
-                            'assets/images/google_logo.png',
-                            height: 40, // Adjust size as needed
-                            width: 40,  // Adjust size as needed
-                          ),
                         ),
                       ],
                     ),

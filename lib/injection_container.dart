@@ -143,14 +143,14 @@ void setupLocator() async{
   locator.registerLazySingleton<GetCartItems>(() => GetCartItems( locator() ));
   locator.registerLazySingleton<RemoveItemFromCart>(() => RemoveItemFromCart( locator() ));
 
-  locator.registerLazySingleton<GetFavouriteProductsIdUsercase>(() => GetFavouriteProductsIdUsercase( locator() ));
+  locator.registerLazySingleton<GetFavouriteProductsIdUsecase>(() => GetFavouriteProductsIdUsecase( locator() ));
   locator.registerLazySingleton<ToggleFavouriteUsecase>(() => ToggleFavouriteUsecase( locator() ));
 
 
 
   locator.registerFactory<ProductBloc>(() => ProductBloc(
     getProductsUsecase:  locator(),
-    getFavouriteProductsIdUsercase: locator(),
+    getFavouriteProductsIdUsecase: locator(),
     toggleFavouriteUsecase: locator()
  
     ));

@@ -7,6 +7,7 @@ import 'package:sellphy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sellphy/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sellphy/features/profile/presentation/bloc/profile_event.dart';
+import 'package:sellphy/features/profile/presentation/widgets/profile_detail_row.dart';
 import 'profile_form.dart';
 
 class ProfileDetailsPage extends StatefulWidget {
@@ -25,7 +26,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white, // App bar background color set to white
+        backgroundColor: Colors.white, 
         title: const Text(
           'Profile Details',
           style: TextStyle(color: Colors.black),
@@ -35,8 +36,8 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
       ),
       body: Container(
         constraints: const BoxConstraints
-            .expand(), // Ensures the container takes up the full screen
-        color: Colors.white, // Background color set to white
+            .expand(),
+        color: Colors.white, 
         child: FutureBuilder<ProfileModel>(
           future: profileBloc.onGetProfileForProfilePage(),
           builder: (context, snapshot) {
@@ -95,20 +96,18 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                       ),
                       const SizedBox(height: 24),
                       Card(
-                        // elevation: 2,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              12), // Rounded corners for the Card
+                              12),
                         ),
                         child: Container(
                           decoration: BoxDecoration(
                             color: const Color(
-                                0xFFEAF4F3), // Set the background color
+                                0xFFEAF4F3), 
                             borderRadius: BorderRadius.circular(
-                                12), // Rounded corners for the Container
+                                12), 
                           ),
-                          // color: const Color(
-                          // 0xFFEAF4F3), // Set the background color here
+                 
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
@@ -207,60 +206,6 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
           },
         ),
       ),
-    );
-  }
-}
-
-class ProfileDetailRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const ProfileDetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.red.shade100,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: Colors.red),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

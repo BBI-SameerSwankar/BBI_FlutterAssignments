@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sellphy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sellphy/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sellphy/features/auth/presentation/pages/signup_screen.dart';
+import 'package:sellphy/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:sellphy/features/auth/presentation/widgets/custom_button.dart';
+import 'package:sellphy/features/auth/presentation/widgets/forgot_password_dialog.dart';
+import 'package:sellphy/features/auth/presentation/widgets/google_login_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -20,96 +24,6 @@ class _LoginPageState extends State<LoginPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void _showForgotPasswordDialog(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          title: const Text(
-            'Forgot Password',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Enter your email to reset your password.',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final email = emailController.text.trim();
-                if (email.isNotEmpty) {
-                  BlocProvider.of<AuthBloc>(context).add(
-                    ForgotPasswordEvent(email: email),
-                  );
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Password reset link sent!'),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please enter a valid email.'),
-                    ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Text(
-                'Submit',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -135,57 +49,41 @@ class _LoginPageState extends State<LoginPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    TextFormField(
+                    CustomTextField(
                       controller: _emailController,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.person),
-                        hintText: 'Username or Email',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an email';
-                        }
-                        return null;
-                      },
+                      hintText: 'Email',
+                      icon: Icons.person,
+                      validator: (value) => value?.isEmpty ?? true
+                          ? 'Please enter an email'
+                          : null,
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    CustomTextField(
                       controller: _passwordController,
+                      hintText: 'Password',
+                      icon: Icons.lock,
                       obscureText: _obscureText,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.lock),
-                        hintText: 'Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText ? Icons.visibility : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
-                          },
-                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a password';
-                        }
-                        return null;
-                      },
+                      validator: (value) => value?.isEmpty ?? true
+                          ? 'Please enter a password'
+                          : null,
                     ),
                     const SizedBox(height: 8),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {
-                          _showForgotPasswordDialog(context);
-                        },
+                        onPressed: () => ForgotPasswordDialog.show(context),
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(
@@ -196,68 +94,34 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            final email = _emailController.text;
-                            final password = _passwordController.text;
-
-                            // Dispatch the login event
-                            BlocProvider.of<AuthBloc>(context).add(
-                              SignInWithEmailAndPasswordEvent(
-                                email: email,
-                                password: password,
-                              ),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                    CustomButton(
+                      text: 'Login',
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          BlocProvider.of<AuthBloc>(context).add(
+                            SignInWithEmailAndPasswordEvent(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            ),
+                          );
+                        }
+                      },
                     ),
                     const SizedBox(height: 24),
                     const Center(
                       child: Text(
                         '- OR Continue with -',
-                        style: TextStyle(
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(color: Colors.grey),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            // Add Google login logic here
-                            BlocProvider.of<AuthBloc>(context).add(
-                              SignInWithGoogleEvent(),
-                            );
-                          },
-                          child: Image.asset(
-                            'assets/images/google_logo.png',
-                            height: 40, // Adjust size as needed
-                            width: 40,  // Adjust size as needed
-                          ),
-                        ),
-                      ],
-                    ),
+                   GoogleLoginIcon(
+  onTap: () {
+    BlocProvider.of<AuthBloc>(context).add(SignInWithGoogleEvent());
+    // Navigator.pushReplacementNamed(context, '/');
+  },
+),
+
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

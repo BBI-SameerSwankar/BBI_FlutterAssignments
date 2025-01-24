@@ -36,7 +36,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<void> addItemToCart(String userId, Cart cartItem) async {
-    final productId = cartItem.productId.toString(); // Convert productId to string for Firestore
+    final productId = cartItem.productId.toString(); 
     final quantity = cartItem.quantity;
     print("receiveed quant");
     print(quantity);
@@ -45,12 +45,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     final productSnapshot = await productRef.get();
 
     if (productSnapshot.exists) {
-      // If the product already exists, increment its quantity
+ 
       await productRef.update({
         'quantity': quantity,
       });
     } else {
-      // If the product doesn't exist, create it with the initial quantity
+
       await productRef.set({
         'productId': cartItem.productId,
         'quantity': quantity,
@@ -60,7 +60,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<void> removeItemFromCart(String userId, Cart cartItem) async {
-    final productId = cartItem.productId.toString(); // Convert productId to string for Firestore
+    final productId = cartItem.productId.toString(); 
     final quantity = cartItem.quantity;
     final productRef = _firestore.collection('carts').doc(userId).collection('products').doc(productId);
 
@@ -70,12 +70,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       final currentQuantity = productSnapshot.data()?['quantity'] as int;
 
       if (currentQuantity > quantity) {
-        // Decrease the quantity
+    
         await productRef.update({
           'quantity': FieldValue.increment(-quantity),
         });
       } else {
-        // If quantity to remove is greater or equal, delete the product
+    
         await productRef.delete();
       }
     }

@@ -34,15 +34,13 @@ class AuthWrapper extends StatelessWidget {
               body: Center(child: CircularProgressIndicator()));
         } else if (state is AuthSignedIn) {
 
-            print("this is going to work./.......");
-            BlocProvider.of<ProfileBloc>(context).add(GetProfileEvent());
+            
+          BlocProvider.of<ProfileBloc>(context).add(GetProfileEvent());
           return BlocBuilder<ProfileBloc, ProfileState>(
-            builder: (context, profileState) {
+          builder: (context, profileState) {
 
-              print(profileState);
-              if (profileState is ProfileStatusIncompleteState) {
-                return ProfileForm(isEdit: false);
-              } 
+       
+              if (profileState is ProfileStatusIncompleteState) { return ProfileForm(isEdit: false);} 
               else if (profileState is ProfileSetupComplete)
               {                
                 if(profileState.isEdit)
@@ -50,10 +48,8 @@ class AuthWrapper extends StatelessWidget {
                   return BottomNavigationPage(initialIndex: 3);
                 }
                 return BottomNavigationPage(initialIndex: 0);
-
               }            
-              return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()));
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
                   
             },
           );

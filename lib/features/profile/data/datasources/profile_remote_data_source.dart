@@ -89,12 +89,11 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       var profileData = snapshot.data() as Map<String, dynamic>;
       print("get profile data");
       print(profileData);
-      // Check if any critical field is null
       if (profileData['username'] == "" || profileData['phoneNumber'] == "" || profileData['address'] == "") {
         return false;
       }
 
-      return true; // If all fields are present, profile is complete
+      return true; 
     } catch (e) {
       throw Exception('Error checking profile status: ${e.toString()}');
     }

@@ -32,7 +32,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
  
   Future<void> _onGetProducts(GetProductEvent event, Emitter<ProductState> emit) async {
     emit(ProductLoading());
-
+    print("gettting products...........");
       if (_products.isNotEmpty) {
       print("not calledd at firsttttt");
       emit(ProductLoaded(_products));
@@ -47,7 +47,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       (products) {
         _products = products;
         add(LoadFavoriteProductsIdEvent());
-        // emit(ProductLoaded(products));
       },
     );
   }
@@ -92,8 +91,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
 
-  Future<void> _clearProductList(
-      ClearProductListEvent event, Emitter<ProductState> emit) async {
+  Future<void> _clearProductList(ClearProductListEvent event, Emitter<ProductState> emit) async {
     _products = [];
     emit(ProductInitial());
   }

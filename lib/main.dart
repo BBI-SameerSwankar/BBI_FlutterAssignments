@@ -53,7 +53,7 @@ class MainApp extends StatelessWidget {
           '/signup': (context) => RegisterPage(),
           '/profileform': (context) => ProfileForm(),
         },
-      ),
+      ),   
     );
   }
 }

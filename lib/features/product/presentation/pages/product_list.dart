@@ -6,8 +6,22 @@ import 'package:sellphy/features/product/presentation/widgets/product_cart.dart'
 import 'package:sellphy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:sellphy/features/profile/presentation/bloc/profile_state.dart';
 
-class ProductList extends StatelessWidget {
+class ProductList extends StatefulWidget {
   const ProductList({super.key});
+
+  @override
+  State<ProductList> createState() => _ProductListState();
+}
+
+class _ProductListState extends State<ProductList> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    BlocProvider.of<ProductBloc>(context).add(GetProductEvent());
+  }
+
 
   @override
   Widget build(BuildContext context) {

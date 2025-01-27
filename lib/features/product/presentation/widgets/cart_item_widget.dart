@@ -121,10 +121,10 @@ class CartItemWidget extends StatelessWidget {
   Widget _quantityButton(BuildContext context, {required IconData icon, required VoidCallback onPressed}) {
     return GestureDetector(
       onTap: onPressed,
-      child: const CircleAvatar(
+      child: CircleAvatar(
         radius: 16,
         backgroundColor: Color(0xFFEEEEEE),
-        child: Icon(Icons.add, color: Colors.black, size: 18),
+        child: Icon(icon, color: Colors.black, size: 18),
       ),
     );
   }
